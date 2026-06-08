@@ -3,7 +3,12 @@ import { dedup } from "@/lib/dedup";
 import { enrichEvents, saveEnrichedEvents } from "@/lib/enrichment";
 import { getScrapers } from "@/lib/scrapers";
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: Request): Promise<NextResponse> {
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const log: string[] = [];
 
   // 1. Scrape all sources
