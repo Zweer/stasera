@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx drizzle-kit push --force && next build",
+  "buildCommand": "npx drizzle-kit migrate && next build",
   "crons": [
     {
       "path": "/api/cron/scrape",
