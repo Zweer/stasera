@@ -17,7 +17,8 @@
   },
   "overrides": {
     "better-auth": {
-      "drizzle-orm": "$drizzle-orm"
+      "drizzle-orm": "$drizzle-orm",
+      "drizzle-kit": "$drizzle-kit"
     }
   },
   "dependencies": {
