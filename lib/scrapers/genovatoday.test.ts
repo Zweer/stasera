@@ -36,7 +36,7 @@ const LISTING_HTML = `
 
 const DETAIL_HTML = `
 <html><body>
-<div class="c-entry u-p-small">
+<div data-content--body="[[counter]]">
   <p>Il festival jazz più atteso dell'estate genovese.</p>
   <p>Tre giorni di musica dal vivo con artisti internazionali.</p>
 </div>

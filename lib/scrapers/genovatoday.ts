@@ -81,7 +81,7 @@ async function fetchDetail(item: ListingItem): Promise<RawEvent> {
   const $ = cheerio.load(html);
 
   const description =
-    $("div.c-entry")
+    $("[data-content--body]")
       .find("p")
       .map((_, el) => $(el).text().trim())
       .get()
