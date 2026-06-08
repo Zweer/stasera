@@ -1,12 +1,11 @@
 import {
-  pgTable,
-  text,
-  timestamp,
-  integer,
-  jsonb,
-  real,
   boolean,
   index,
+  jsonb,
+  pgTable,
+  real,
+  text,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 // ─── Auth (managed by better-auth, defined here for relations) ──────────────
@@ -95,7 +94,7 @@ export const events = pgTable(
   (event) => [
     index("events_date_idx").on(event.date),
     index("events_status_idx").on(event.status),
-  ]
+  ],
 );
 
 // ─── Preferences ───────────────────────────────────────────────────────────────
@@ -127,7 +126,7 @@ export const preferenceComparisons = pgTable(
     reason: text("reason"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (comparison) => [index("comparisons_user_idx").on(comparison.userId)]
+  (comparison) => [index("comparisons_user_idx").on(comparison.userId)],
 );
 
 // ─── Recommendations ───────────────────────────────────────────────────────────
@@ -152,7 +151,7 @@ export const recommendations = pgTable(
   (rec) => [
     index("recommendations_user_idx").on(rec.userId),
     index("recommendations_status_idx").on(rec.userId, rec.status),
-  ]
+  ],
 );
 
 // ─── Chat ──────────────────────────────────────────────────────────────────────
@@ -170,7 +169,7 @@ export const chatMessages = pgTable(
     content: text("content").notNull(),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (msg) => [index("chat_user_idx").on(msg.userId)]
+  (msg) => [index("chat_user_idx").on(msg.userId)],
 );
 
 // ─── Push Subscriptions ────────────────────────────────────────────────────────
@@ -189,5 +188,5 @@ export const pushSubscriptions = pgTable(
     auth: text("auth").notNull(),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (sub) => [index("push_user_idx").on(sub.userId)]
+  (sub) => [index("push_user_idx").on(sub.userId)],
 );
