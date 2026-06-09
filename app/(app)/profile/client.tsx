@@ -29,7 +29,7 @@ export function ProfileClient({ profile }: Props) {
   const maxWeight = Math.max(...sorted.map(([, w]) => Math.abs(w)));
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 p-6">
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 p-6 pb-24">
       <h1 className="text-2xl font-bold">I tuoi gusti</h1>
       <p className="text-muted-foreground text-sm">
         Ecco cosa abbiamo capito delle tue preferenze.
