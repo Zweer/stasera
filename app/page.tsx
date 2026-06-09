@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { GoogleSignInButton } from "@/components/features/google-sign-in-button";
+import { SignOutButton } from "@/components/features/sign-out-button";
 import { db } from "@/db";
 import { userPreferences } from "@/db/schema";
 
@@ -38,6 +39,7 @@ export default async function Home() {
       <h1 className="text-3xl font-bold">
         Ciao, {session.user.name?.split(" ")[0]}!
       </h1>
+      <SignOutButton />
 
       {!hasProfile ? (
         <>

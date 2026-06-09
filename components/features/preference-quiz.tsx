@@ -93,7 +93,10 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
       </p>
 
       {/* Cards */}
-      <div className="flex w-full max-w-md flex-col gap-4">
+      <div
+        key={round}
+        className="flex w-full max-w-md animate-[fadeIn_0.3s_ease-in] flex-col gap-4"
+      >
         <OptionCard
           option={currentPair.optionA}
           selected={chosen === "a"}
@@ -152,7 +155,7 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
               type="button"
               key={r.tag}
               onClick={() => handleReason(r)}
-              className="bg-secondary hover:bg-secondary/80 rounded-full px-4 py-2 text-sm transition-colors"
+              className="bg-secondary hover:bg-secondary/80 cursor-pointer rounded-full px-4 py-2 text-sm transition-colors"
             >
               {r.text}
             </button>
