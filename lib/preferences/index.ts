@@ -4,5 +4,5 @@ export {
   type ComparisonPair,
   generatePairs,
 } from "./pairs";
-export { saveComparison } from "./profile";
+export { saveComparison, saveSkip } from "./profile";
 export { generateReasons, type Reason } from "./reasons";

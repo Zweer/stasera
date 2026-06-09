@@ -111,6 +111,31 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
         />
       </div>
 
+      {/* Skip */}
+      {!chosen && (
+        <button
+          type="button"
+          onClick={async () => {
+            await fetch("/api/preferences/skip", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                optionA: currentPair.optionA,
+                optionB: currentPair.optionB,
+              }),
+            });
+            if (round + 1 >= total) {
+              onComplete();
+            } else {
+              setRound((r) => r + 1);
+            }
+          }}
+          className="text-muted-foreground cursor-pointer text-sm underline underline-offset-4"
+        >
+          Nessuno dei due
+        </button>
+      )}
+
       {/* Reasons */}
       {loading && (
         <p className="text-muted-foreground text-sm animate-pulse">
