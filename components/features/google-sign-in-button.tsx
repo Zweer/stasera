@@ -4,13 +4,16 @@ import { authClient } from "@/lib/auth-client";
 
 export function GoogleSignInButton() {
   const handleSignIn = async () => {
-    const result = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
-    if (result.error) {
-      console.error("Sign-in error:", result.error);
-      alert(`Errore login: ${result.error.message ?? result.error.code}`);
+    try {
+      const result = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+      if (result.error) {
+        alert(`Errore login: ${JSON.stringify(result.error)}`);
+      }
+    } catch (e) {
+      alert(`Eccezione: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
