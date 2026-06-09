@@ -64,12 +64,12 @@ L'app risolve il problema "che facciamo stasera?" in tre fasi:
 |---|---|---|
 | Framework | Next.js 16 (App Router, Server Actions) | Full-stack in un unico progetto, ottimo DX |
 | UI | shadcn/ui + Tailwind CSS 4 | Componenti belli, accessibili, customizzabili |
-| Auth | Auth.js v5 (Google OAuth) | Standard de facto per Next.js, zero costi |
+| Auth | Better Auth (Google OAuth) | Adapter Drizzle nativo, zero costi |
 | DB | Neon (PostgreSQL + pgvector) | Serverless, generous free tier, pgvector nativo |
 | ORM | Drizzle 1.0 | Type-safe, leggero, ottimo con Neon |
 | LLM | Gemini 3.5 Flash | Vision + testo, ultimo modello Google I/O 2026 |
 | Hosting | Vercel | Deploy immediato, cron jobs, edge functions |
-| PWA | @serwist/next (o next-pwa) | Installabile, offline-capable |
+| PWA | @serwist/turbopack | Installabile, offline-capable |
 | Notifiche | Web Push API (VAPID) | Native nelle PWA, nessun servizio esterno |
 | Scraping | cheerio (route handler) | Semplice, gira come Vercel Cron |
 
@@ -150,7 +150,7 @@ Solo amici per ora (no waitlist, no rate limiting pesante). Multi-utente da subi
 ## Schema DB (bozza)
 
 ```sql
--- Utenti (gestiti da Auth.js, estesi con preferenze)
+-- Utenti (gestiti da Better Auth, estesi con preferenze)
 users (id, email, name, image, created_at)
 
 -- Profilo preferenze calcolato
@@ -178,34 +178,34 @@ push_subscriptions (id, user_id, endpoint, p256dh, auth, created_at)
 ## Roadmap MVP
 
 ### Fase 1 — Setup & Fondamenta
-- [ ] Init Next.js 16 + Tailwind 4 + shadcn/ui
-- [ ] Auth.js v5 con Google OAuth
-- [ ] Neon DB + Drizzle schema + migrazioni
-- [ ] PWA setup (manifest, service worker, installazione)
+- [x] Init Next.js 16 + Tailwind 4 + shadcn/ui
+- [x] Better Auth con Google OAuth
+- [x] Neon DB + Drizzle schema + migrazioni
+- [x] PWA setup (manifest, service worker, installazione)
 
 ### Fase 2 — Recupero eventi
-- [ ] Scraper MenteLocale (parser HTML → eventi grezzi)
-- [ ] Scraper GenovaToday (parser HTML → eventi grezzi)
-- [ ] Pipeline arricchimento LLM (testo → metadati strutturati)
-- [ ] Upload screenshot → Gemini Vision → evento
-- [ ] Vercel Cron giornaliero
+- [x] Scraper MenteLocale (parser HTML → eventi grezzi)
+- [x] Scraper GenovaToday (parser HTML → eventi grezzi)
+- [x] Pipeline arricchimento LLM (testo → metadati strutturati)
+- [x] Upload screenshot → Gemini Vision → evento
+- [x] Vercel Cron giornaliero
 
 ### Fase 3 — Preferenze
-- [ ] Onboarding: UI confronti a coppie
-- [ ] Generazione opzioni "perché" con LLM
-- [ ] Calcolo profilo preferenze
-- [ ] Pagina "il mio profilo" (visualizzazione + raffinamento)
+- [x] Onboarding: UI confronti a coppie
+- [x] Generazione opzioni "perché" con LLM
+- [x] Calcolo profilo preferenze
+- [x] Pagina "il mio profilo" (visualizzazione + raffinamento)
 
 ### Fase 4 — Raccomandazione
-- [ ] Job venerdì/sabato: matching profilo ↔ eventi
-- [ ] Pagina suggerimenti (3 card con motivazione)
-- [ ] Chat libera per re-ranking
+- [x] Job venerdì/sabato: matching profilo ↔ eventi
+- [x] Pagina suggerimenti (3 card con motivazione)
+- [x] Chat libera per re-ranking
 - [ ] Push notification
 
 ### Fase 5 — Polish
 - [ ] Offline support (cache ultimi consigli)
-- [ ] UI polish, animazioni, dark mode
-- [ ] Gestione eventi duplicati (dedup cross-fonte)
+- [x] UI polish, animazioni, dark mode
+- [x] Gestione eventi duplicati (dedup cross-fonte)
 - [ ] Feedback loop (accettato/rifiutato → aggiorna profilo)
 
 ### Futuro (post-MVP)
@@ -231,16 +231,19 @@ npx drizzle-kit studio # Visual DB browser
 # Auth
 AUTH_GOOGLE_ID=
 AUTH_GOOGLE_SECRET=
-AUTH_SECRET=
+BETTER_AUTH_SECRET=        # openssl rand -base64 32
 
 # Database
-DATABASE_URL=          # Neon connection string
+DATABASE_URL=              # Neon connection string
 
 # LLM
-GEMINI_API_KEY=
+GOOGLE_GENERATIVE_AI_API_KEY=
 
-# Push
-VAPID_PUBLIC_KEY=
+# Cron
+CRON_SECRET=               # openssl rand -hex 32
+
+# Push (futuro)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=mailto:you@example.com
 ```

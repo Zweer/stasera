@@ -3,51 +3,56 @@
 ## Dependency Order
 
 ```
-T1 (MenteLocale) ──┐
-                    ├→ T3 (LLM Enrichment) → T5 (Dedup) → T6 (Cron)
-T2 (GenovaToday) ──┘                    ↑
-                                         │
-                          T4 (Upload) ───┘
+T0 (Interface) ─┐
+T1 (MenteLocale)├→ T3 (LLM Enrichment) → T5 (Dedup) → T6 (Cron)
+T2 (GenovaToday)┘                    ↑
+                                      │
+                       T4 (Upload) ───┘
 ```
 
-## T1 — Scraper: MenteLocale
+## T0 — Scraper Interface & Registry ✅
 
-- [ ] Analyze site structure (URL patterns, HTML layout, pagination)
-- [ ] Implement HTML parser (raw event extraction)
-- [ ] Route handler for manual trigger
-- [ ] Tests with sample HTML fixtures
+- [x] Common Scraper interface (types.ts)
+- [x] Registry pattern for scraper registration
 
-## T2 — Scraper: GenovaToday
+## T1 — Scraper: MenteLocale ✅
 
-- [ ] Analyze site structure (URL patterns, HTML layout)
-- [ ] Implement HTML parser (raw event extraction)
-- [ ] Route handler for manual trigger
-- [ ] Tests with sample HTML fixtures
+- [x] Analyze site structure (URL patterns, HTML layout, pagination)
+- [x] Implement HTML parser (list + detail pages)
+- [x] Route handler for manual trigger (/api/scrape/mentelocale)
+- [x] Tests with mock HTML fixtures
 
-## T3 — LLM Enrichment Pipeline
+## T2 — Scraper: GenovaToday ✅
 
-- [ ] Define Zod schema for structured event metadata
-- [ ] Prompt engineering for metadata extraction
-- [ ] AI SDK integration (Gemini 3.5 Flash, structured output)
-- [ ] Batch processing support
-- [ ] Save enriched events to DB
+- [x] Analyze site structure (URL patterns, date filter in URL)
+- [x] Implement HTML parser (list + detail pages)
+- [x] Route handler for manual trigger (/api/scrape/genovatoday)
+- [x] Tests with mock HTML fixtures
 
-## T4 — Screenshot Upload
+## T3 — LLM Enrichment Pipeline ✅
 
-- [ ] Upload API endpoint (accepts image)
-- [ ] Gemini Vision OCR (extract text from image)
-- [ ] Feed extracted text into enrichment pipeline
-- [ ] Upload UI (drag & drop or file picker)
+- [x] Define Zod schema for structured event metadata
+- [x] Prompt engineering for metadata extraction
+- [x] AI SDK integration (Gemini 3.5 Flash, structured output)
+- [x] Batch processing support (Promise.all)
+- [x] Save enriched events to DB
 
-## T5 — Deduplication
+## T4 — Screenshot Upload ✅
 
-- [ ] Title normalization function
-- [ ] Fuzzy matching logic (title + date + location)
-- [ ] Integration in save pipeline (skip or merge duplicates)
+- [x] Upload API endpoint (POST /api/events/upload, accepts image)
+- [x] Gemini Vision OCR (extract text from image)
+- [x] Feed extracted text into enrichment pipeline
+- [ ] Upload UI (drag & drop or file picker) — API only for now
 
-## T6 — Cron Job
+## T5 — Deduplication ✅
 
-- [ ] Vercel Cron configuration (daily morning trigger)
-- [ ] Orchestrator: run scrapers → enrich → dedup → save
-- [ ] Error handling and logging
-- [ ] Soft-delete expired events (date in the past)
+- [x] Title normalization function
+- [x] Dedup by normalized title + date against DB
+- [x] Integration in save pipeline (cron filters before insert)
+
+## T6 — Cron Job ✅
+
+- [x] Vercel Cron configuration (daily 06:00)
+- [x] Orchestrator: scrape → enrich → dedup → save
+- [x] Protected with CRON_SECRET bearer token
+- [ ] Soft-delete expired events (not yet implemented)
