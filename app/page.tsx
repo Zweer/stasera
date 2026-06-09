@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { GoogleSignInButton } from "@/components/features/google-sign-in-button";
 import { db } from "@/db";
 import { userPreferences } from "@/db/schema";
 
@@ -17,12 +18,7 @@ export default async function Home() {
         <p className="text-muted-foreground max-w-xs text-lg">
           Cosa facciamo stasera a Genova? Ti consiglio io.
         </p>
-        <Link
-          href="/api/auth/signin/google"
-          className="bg-primary text-primary-foreground mt-4 rounded-full px-8 py-3 text-lg font-medium shadow-lg transition-transform hover:scale-105"
-        >
-          Accedi con Google
-        </Link>
+        <GoogleSignInButton />
       </main>
     );
   }
