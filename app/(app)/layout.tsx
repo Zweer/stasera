@@ -1,5 +1,6 @@
 import { BottomNav } from "@/components/layouts/bottom-nav";
 import { TopBar } from "@/components/layouts/top-bar";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <TopBar />
       <main className="pt-16 pb-24">{children}</main>
       <BottomNav />
+      <Toaster position="top-center" />
     </>
   );
 }

@@ -2,7 +2,7 @@
 /// <reference lib="webworker" />
 import { defaultCache } from "@serwist/turbopack/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist } from "serwist";
+import { NetworkFirst, Serwist } from "serwist";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -29,6 +29,20 @@ const serwist = new Serwist({
     ],
   },
 });
+
+// Cache API responses for offline access
+serwist.registerCapture(
+  ({ url }) => url.pathname === "/api/recommendations",
+  new NetworkFirst({
+    cacheName: "recommendations-cache",
+    networkTimeoutSeconds: 5,
+  }),
+);
+
+serwist.registerCapture(
+  ({ url }) => url.pathname === "/api/events",
+  new NetworkFirst({ cacheName: "events-cache", networkTimeoutSeconds: 5 }),
+);
 
 serwist.addEventListeners();
 

@@ -1,54 +1,56 @@
 "use client";
 
 import { Camera, MapPin, Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const FILTERS = ["Oggi", "Weekend", "Musica", "Aperitivo", "Cocktail"] as const;
-
-const MOCK_EVENTS = [
-  {
-    id: "1",
-    name: "Jazz in Boccadasse",
-    location: "La Perla del Borgo",
-    genre: "Jazz",
-    vibe: "Cocktail bar",
-    imageUrl: null,
-    live: true,
-  },
-  {
-    id: "2",
-    name: "Underground Techno Night",
-    location: "Magazzini del Cotone",
-    genre: "Clubbing",
-    vibe: "Urban",
-    imageUrl: null,
-    live: false,
-  },
-  {
-    id: "3",
-    name: "Degustazione Vini Liguri",
-    location: "Enoteca del Centro",
-    genre: "Wine",
-    vibe: "Slow",
-    imageUrl: null,
-    live: false,
-  },
-  {
-    id: "4",
-    name: "Aperitivo al Porto",
-    location: "Nassa Rooftop",
-    genre: "Sunset",
-    vibe: "Lounge",
-    imageUrl: null,
-    live: false,
-    isNew: true,
-  },
+const FILTERS = [
+  "Tutti",
+  "Musica",
+  "Aperitivo",
+  "Nightlife",
+  "Teatro",
+  "Food",
 ] as const;
 
+interface Event {
+  id: string;
+  name: string;
+  locationName: string | null;
+  genre: string | null;
+  vibe: string | null;
+  imageUrl: string | null;
+  date: string;
+  time: string | null;
+}
+
 export function ExploreClient() {
-  const [activeFilter, setActiveFilter] = useState<string>("Oggi");
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string>("Tutti");
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((r) => r.json())
+      .then((data) => setEvents(data.events ?? []))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = events.filter((e) => {
+    if (
+      activeFilter !== "Tutti" &&
+      e.genre?.toLowerCase() !== activeFilter.toLowerCase()
+    ) {
+      return false;
+    }
+    if (search && !e.name.toLowerCase().includes(search.toLowerCase())) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="px-container-margin pt-lg pb-32">
@@ -57,6 +59,8 @@ export function ExploreClient() {
         <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-on-surface-variant transition-colors group-focus-within:text-primary" />
         <input
           type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Cerca eventi o locali a Genova..."
           className="text-body-md w-full rounded-xl border border-outline-variant bg-surface-container py-4 pr-4 pl-12 text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary"
         />
@@ -82,12 +86,28 @@ export function ExploreClient() {
       </div>
 
       {/* Event list */}
-      <h2 className="text-headline-md mb-md">Consigliati per stasera</h2>
-      <div className="space-y-md">
-        {MOCK_EVENTS.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
-      </div>
+      <h2 className="text-headline-md mb-md">Eventi in arrivo</h2>
+
+      {loading ? (
+        <div className="space-y-md">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-36 animate-pulse rounded-xl bg-surface-container"
+            />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <p className="text-body-md py-xl text-center text-on-surface-variant">
+          Nessun evento trovato.
+        </p>
+      ) : (
+        <div className="space-y-md">
+          {filtered.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
+      )}
 
       {/* FAB Upload */}
       <Link
@@ -101,19 +121,16 @@ export function ExploreClient() {
   );
 }
 
-function EventCard({
-  event,
-}: {
-  event: (typeof MOCK_EVENTS)[number];
-}) {
+function EventCard({ event }: { event: Event }) {
   return (
     <article className="group flex h-36 cursor-pointer overflow-hidden rounded-xl border border-outline-variant bg-surface-container transition-transform active:scale-[0.98]">
-      {/* Image placeholder */}
       <div className="relative h-full w-1/3 overflow-hidden bg-surface-container-high">
         {event.imageUrl ? (
-          <img
+          <Image
             src={event.imageUrl}
             alt={event.name}
+            fill
+            unoptimized
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
@@ -121,26 +138,7 @@ function EventCard({
             <span className="text-2xl text-outline">🎵</span>
           </div>
         )}
-        {/* Badges */}
-        {"live" in event && event.live && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-surface/80 px-2 py-0.5 backdrop-blur-md">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tertiary" />
-            <span className="text-label-sm uppercase tracking-wider text-on-surface">
-              LIVE
-            </span>
-          </div>
-        )}
-        {"isNew" in event && event.isNew && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-surface/80 px-2 py-0.5 backdrop-blur-md">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary-container" />
-            <span className="text-label-sm uppercase tracking-wider text-on-surface">
-              NEW
-            </span>
-          </div>
-        )}
       </div>
-
-      {/* Content */}
       <div className="flex w-2/3 flex-col justify-between p-md">
         <div>
           <h3 className="text-body-lg line-clamp-1 font-semibold text-on-surface transition-colors group-hover:text-primary">
@@ -148,16 +146,22 @@ function EventCard({
           </h3>
           <div className="mt-1 flex items-center gap-1 text-on-surface-variant">
             <MapPin className="h-3.5 w-3.5" />
-            <p className="text-label-md">{event.location}</p>
+            <p className="text-label-md">
+              {[event.locationName, event.time].filter(Boolean).join(" · ")}
+            </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-1">
-          <span className="rounded border border-tertiary/30 bg-tertiary/10 px-2 py-0.5 text-[10px] uppercase text-tertiary">
-            {event.genre}
-          </span>
-          <span className="rounded border border-outline-variant px-2 py-0.5 text-[10px] uppercase text-on-surface-variant">
-            {event.vibe}
-          </span>
+          {event.genre && (
+            <span className="rounded border border-tertiary/30 bg-tertiary/10 px-2 py-0.5 text-[10px] uppercase text-tertiary">
+              {event.genre}
+            </span>
+          )}
+          {event.vibe && (
+            <span className="rounded border border-outline-variant px-2 py-0.5 text-[10px] uppercase text-on-surface-variant">
+              {event.vibe}
+            </span>
+          )}
         </div>
       </div>
     </article>

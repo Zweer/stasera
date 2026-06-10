@@ -1,8 +1,9 @@
 "use client";
 
 import { Check, MapPin, Sparkles, X } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Recommendation {
   id: string;
@@ -36,6 +37,7 @@ export function SuggestionsClient() {
   const handleFeedback = useCallback(
     async (id: string, status: "accepted" | "rejected") => {
       setRecs((prev) => prev.filter((r) => r.id !== id));
+      toast(status === "accepted" ? "Ci vado! 🎉" : "Rimosso dai suggerimenti");
       await fetch("/api/recommendations/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,9 +102,11 @@ function SuggestionCard({
       {/* Image */}
       <div className="relative h-[320px] w-full overflow-hidden sm:h-[400px]">
         {event.imageUrl ? (
-          <img
+          <Image
             src={event.imageUrl}
             alt={event.name}
+            fill
+            unoptimized
             className="h-full w-full object-cover"
           />
         ) : (
