@@ -53,12 +53,13 @@ export default function RootLayout({
     >
       <head>
         <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: inline script needed to prevent dark mode flash
           dangerouslySetInnerHTML={{
             __html: `(function(){var d=document.documentElement;var m=window.matchMedia('(prefers-color-scheme:dark)');function u(e){d.classList.toggle('dark',e.matches)}u(m);m.addEventListener('change',u)})()`,
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full w-full">
         <SerwistProvider swUrl="/serwist/sw.js">{children}</SerwistProvider>
       </body>
     </html>
