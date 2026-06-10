@@ -19,14 +19,14 @@ export function WelcomeHero() {
           <div className="mb-4 rounded-full bg-primary/10 p-4 shadow-[0_0_20px_rgba(255,193,116,0.2)]">
             <Moon className="h-12 w-12 fill-primary text-primary" />
           </div>
-          <h1 className="text-display-lg text-primary tracking-tighter">
+          <h1 className="font-display text-display-lg font-bold tracking-tighter text-primary">
             Stasera
           </h1>
         </div>
 
         {/* Headline */}
         <div className="mb-xl space-y-md">
-          <h2 className="text-headline-lg-mobile text-on-surface md:text-headline-lg">
+          <h2 className="font-display text-headline-lg-mobile font-semibold text-on-surface md:text-headline-lg">
             La tua notte a Genova,
             <br />
             curata dall'AI.
