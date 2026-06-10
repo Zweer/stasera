@@ -6,7 +6,7 @@ import { GuestSignInButton } from "@/components/features/guest-sign-in-button";
 
 export function WelcomeHero() {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#19120a] px-6">
+    <main className="flex min-h-dvh items-center justify-center bg-[#19120a] px-6">
       <div className="flex w-full max-w-md flex-col items-center text-center">
         {/* Logo */}
         <div className="mb-12 flex flex-col items-center">
@@ -44,6 +44,6 @@ export function WelcomeHero() {
           AI-Powered Experience
         </p>
       </div>
-    </div>
+    </main>
   );
 }

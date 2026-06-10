@@ -131,7 +131,7 @@ function EventCard({ event, priority }: { event: Event; priority?: boolean }) {
             src={event.imageUrl}
             alt={event.name}
             fill
-            unoptimized
+            sizes="33vw"
             priority={priority}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

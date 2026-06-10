@@ -156,6 +156,7 @@ function NotificationToggle({
       </div>
       <button
         type="button"
+        aria-label={subscribed ? "Disattiva notifiche" : "Attiva notifiche"}
         onClick={onToggle}
         disabled={disabled}
         className={cn(
