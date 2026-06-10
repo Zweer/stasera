@@ -126,13 +126,14 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
         </section>
 
         {/* Comparison cards */}
-        <section key={round} className="mb-12 grid grid-cols-2 gap-4">
+        <section key={round} className="mb-8 flex flex-col gap-4">
           <ComparisonCard
             option={currentPair.optionA}
             selected={chosen === "a"}
             dimmed={chosen === "b"}
             onSelect={() => !chosen && handleChoice("a")}
           />
+          <p className="text-center text-sm text-on-surface-variant">oppure</p>
           <ComparisonCard
             option={currentPair.optionB}
             selected={chosen === "b"}
@@ -194,35 +195,43 @@ function ComparisonCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "group relative flex aspect-[3/5] flex-col items-stretch overflow-hidden rounded-xl border text-left transition-all duration-300 active:scale-95",
+        "relative w-full rounded-xl border p-5 text-left transition-all duration-300 active:scale-[0.98]",
         selected
-          ? "ring-2 ring-primary border-primary shadow-[0_0_20px_rgba(255,185,95,0.2)]"
-          : "border-outline-variant",
+          ? "border-primary ring-2 ring-primary shadow-[0_0_20px_rgba(255,185,95,0.2)]"
+          : "border-outline-variant bg-surface-container",
         dimmed && !selected && "opacity-40",
       )}
     >
-      {/* Background gradient placeholder */}
-      <div className="absolute inset-0 bg-gradient-to-b from-surface-container-high to-surface-container" />
-
-      {/* Content overlay */}
-      <div className="relative z-10 flex h-full flex-col justify-end p-4">
-        <span className="text-xs mb-1 uppercase tracking-wider text-primary">
-          {option.tags[0] ?? ""}
-        </span>
-        <h3 className="text-xl leading-tight text-on-surface">
-          {option.title}
-        </h3>
-        <p className="text-xs mt-1 line-clamp-2 text-on-surface-variant">
-          {option.description}
-        </p>
-      </div>
-
-      {/* Check badge */}
-      {selected && (
-        <div className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary">
-          <Check className="h-4 w-4" />
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+            {option.tags[0] ?? ""}
+          </span>
+          <h3 className="mt-1 text-lg font-semibold leading-tight text-on-surface">
+            {option.title}
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
+            {option.description}
+          </p>
+          {option.tags.length > 1 && (
+            <div className="mt-3 flex flex-wrap gap-1">
+              {option.tags.slice(1).map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full border border-outline-variant px-2 py-0.5 text-xs text-on-surface-variant"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+        {selected && (
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary">
+            <Check className="h-4 w-4" />
+          </div>
+        )}
+      </div>
     </button>
   );
 }
