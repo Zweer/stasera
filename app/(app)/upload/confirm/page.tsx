@@ -12,7 +12,7 @@ export default async function ConfirmPage() {
   return (
     <>
       {isGuest && (
-        <div className="px-container-margin pt-lg">
+        <div className="px-5 pt-6">
           <SignUpBanner message="Accedi per salvare i tuoi contributi nel tuo profilo" />
         </div>
       )}

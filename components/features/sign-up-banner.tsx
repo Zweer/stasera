@@ -11,9 +11,9 @@ export function SignUpBanner({
   message = "Accedi per suggerimenti personalizzati",
 }: Props) {
   return (
-    <div className="mx-container-margin rounded-xl border border-primary/20 bg-primary/5 p-lg text-center">
+    <div className="mx-container-margin rounded-xl border border-primary/20 bg-primary/5 p-6 text-center">
       <Sparkles className="mx-auto mb-2 h-6 w-6 text-primary" />
-      <p className="text-body-md mb-md text-on-surface">{message}</p>
+      <p className="text-base mb-4 text-on-surface">{message}</p>
       <GoogleSignInButton />
     </div>
   );

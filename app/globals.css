@@ -67,14 +67,10 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-gutter: 12px;
-  --spacing-md: 16px;
+  /* Spacing — use Tailwind default numeric scale (p-4 = 16px, p-6 = 24px, etc.) */
+  /* Custom named values only where truly needed */
   --spacing-container-margin: 20px;
-  --spacing-lg: 24px;
-  --spacing-xl: 48px;
+  --spacing-gutter: 12px;
 
   /* Font sizes (--text-* namespace → generates text-* utilities) */
   --text-display-lg: 2.5rem;

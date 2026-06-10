@@ -41,13 +41,11 @@ export function UploadClient() {
   );
 
   return (
-    <div className="space-y-lg px-container-margin pt-lg pb-32">
+    <div className="space-y-6 px-5 pt-6 pb-32">
       {/* Header */}
-      <section className="space-y-sm">
-        <h1 className="text-headline-lg-mobile text-on-surface">
-          Carica Evento
-        </h1>
-        <p className="text-body-md text-on-surface-variant">
+      <section className="space-y-2">
+        <h1 className="text-2xl text-on-surface">Carica Evento</h1>
+        <p className="text-base text-on-surface-variant">
           Hai visto un evento su Instagram? Carica lo screen e lo aggiungiamo
           per te.
         </p>
@@ -65,19 +63,19 @@ export function UploadClient() {
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
           className={cn(
-            "flex aspect-[4/3] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed bg-surface-container-low p-lg transition-all duration-300 md:aspect-[21/9]",
+            "flex aspect-[4/3] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed bg-surface-container-low p-6 transition-all duration-300 md:aspect-[21/9]",
             dragOver
               ? "border-primary bg-surface-container shadow-[0_0_0_2px_var(--primary)]"
               : "border-outline-variant hover:border-primary hover:bg-surface-container",
           )}
         >
-          <div className="mb-md flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high transition-transform group-hover:scale-110">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high transition-transform group-hover:scale-110">
             <Camera className="h-8 w-8 text-primary" />
           </div>
-          <span className="text-headline-md text-center text-on-surface">
+          <span className="text-xl text-center text-on-surface">
             Trascina qui lo screenshot
           </span>
-          <span className="text-label-md mt-1 text-on-surface-variant">
+          <span className="text-sm mt-1 text-on-surface-variant">
             o scatta una foto
           </span>
         </button>
@@ -95,11 +93,11 @@ export function UploadClient() {
 
       {/* Processing state */}
       {uploading && (
-        <section className="rounded-xl border border-outline-variant bg-surface-container-high p-md">
-          <div className="mb-sm flex items-center justify-between">
+        <section className="rounded-xl border border-outline-variant bg-surface-container-high p-4">
+          <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              <span className="text-label-md text-primary">
+              <span className="text-sm text-primary">
                 Estraendo dettagli dall'immagine...
               </span>
             </div>
@@ -112,13 +110,13 @@ export function UploadClient() {
 
       {/* Empty state */}
       {!uploading && (
-        <section className="space-y-md">
+        <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-headline-md text-on-surface">Upload Recenti</h2>
+            <h2 className="text-xl text-on-surface">Upload Recenti</h2>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest py-xl text-center">
-            <ImageIcon className="mb-md h-12 w-12 opacity-20 text-on-surface-variant" />
-            <p className="text-body-md italic text-on-surface-variant">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest py-12 text-center">
+            <ImageIcon className="mb-4 h-12 w-12 opacity-20 text-on-surface-variant" />
+            <p className="text-base italic text-on-surface-variant">
               Ancora nessun caricamento. Inizia a mappare la notte di Genova.
             </p>
           </div>
@@ -126,21 +124,21 @@ export function UploadClient() {
       )}
 
       {/* Tips */}
-      <section className="grid grid-cols-1 gap-md pt-md md:grid-cols-2">
-        <div className="flex items-start gap-md rounded-xl border border-outline-variant bg-surface-container p-md">
+      <section className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-2">
+        <div className="flex items-start gap-4 rounded-xl border border-outline-variant bg-surface-container p-4">
           <Lightbulb className="h-5 w-5 shrink-0 text-tertiary" />
           <div className="space-y-1">
-            <h3 className="text-label-md text-on-surface">Tips per l'upload</h3>
-            <p className="text-label-sm leading-relaxed text-on-surface-variant">
+            <h3 className="text-sm text-on-surface">Tips per l'upload</h3>
+            <p className="text-xs leading-relaxed text-on-surface-variant">
               Assicurati che la data e il luogo siano visibili nello screenshot.
             </p>
           </div>
         </div>
-        <div className="flex items-start gap-md rounded-xl border border-outline-variant bg-surface-container p-md">
+        <div className="flex items-start gap-4 rounded-xl border border-outline-variant bg-surface-container p-4">
           <Zap className="h-5 w-5 shrink-0 text-primary" />
           <div className="space-y-1">
-            <h3 className="text-label-md text-on-surface">IA Potenziata</h3>
-            <p className="text-label-sm leading-relaxed text-on-surface-variant">
+            <h3 className="text-sm text-on-surface">IA Potenziata</h3>
+            <p className="text-xs leading-relaxed text-on-surface-variant">
               Il sistema riconosce i font e i loghi dei club più popolari di
               Genova.
             </p>

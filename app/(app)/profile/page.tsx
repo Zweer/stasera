@@ -21,7 +21,7 @@ export default async function ProfilePage() {
   // Guest users see sign-up prompt instead of profile
   if (user.isAnonymous) {
     return (
-      <div className="flex min-h-[60dvh] flex-col items-center justify-center px-container-margin">
+      <div className="flex min-h-[60dvh] flex-col items-center justify-center px-5">
         <SignUpBanner message="Accedi per creare il tuo profilo gusti e ricevere suggerimenti personalizzati" />
       </div>
     );

@@ -53,28 +53,28 @@ export function ExploreClient() {
   });
 
   return (
-    <div className="px-container-margin pt-lg pb-32">
+    <div className="px-5 pt-6 pb-32">
       {/* Search */}
-      <div className="group relative mb-lg">
+      <div className="group relative mb-6">
         <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-on-surface-variant transition-colors group-focus-within:text-primary" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cerca eventi o locali a Genova..."
-          className="text-body-md w-full rounded-xl border border-outline-variant bg-surface-container py-4 pr-4 pl-12 text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary"
+          className="text-base w-full rounded-xl border border-outline-variant bg-surface-container py-4 pr-4 pl-12 text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary"
         />
       </div>
 
       {/* Filter chips */}
-      <div className="mb-xl flex gap-sm overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mb-12 flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {FILTERS.map((f) => (
           <button
             key={f}
             type="button"
             onClick={() => setActiveFilter(f)}
             className={cn(
-              "text-label-md shrink-0 rounded-full border px-md py-2 transition-colors",
+              "text-sm shrink-0 rounded-full border px-4 py-2 transition-colors",
               activeFilter === f
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high",
@@ -86,10 +86,10 @@ export function ExploreClient() {
       </div>
 
       {/* Event list */}
-      <h2 className="text-headline-md mb-md">Eventi in arrivo</h2>
+      <h2 className="text-xl mb-4">Eventi in arrivo</h2>
 
       {loading ? (
-        <div className="space-y-md">
+        <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -98,11 +98,11 @@ export function ExploreClient() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-body-md py-xl text-center text-on-surface-variant">
+        <p className="text-base py-12 text-center text-on-surface-variant">
           Nessun evento trovato.
         </p>
       ) : (
-        <div className="space-y-md">
+        <div className="space-y-4">
           {filtered.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
@@ -112,7 +112,7 @@ export function ExploreClient() {
       {/* FAB Upload */}
       <Link
         href="/upload"
-        className="text-label-md fixed right-container-margin bottom-24 z-50 flex items-center gap-2 rounded-full bg-primary-container px-6 py-3 text-on-primary-container shadow-lg transition-transform active:scale-90"
+        className="text-sm fixed right-container-margin bottom-24 z-50 flex items-center gap-2 rounded-full bg-primary-container px-6 py-3 text-on-primary-container shadow-lg transition-transform active:scale-90"
       >
         <Camera className="h-5 w-5" />
         Carica
@@ -139,14 +139,14 @@ function EventCard({ event }: { event: Event }) {
           </div>
         )}
       </div>
-      <div className="flex w-2/3 flex-col justify-between p-md">
+      <div className="flex w-2/3 flex-col justify-between p-4">
         <div>
-          <h3 className="text-body-lg line-clamp-1 font-semibold text-on-surface transition-colors group-hover:text-primary">
+          <h3 className="text-lg line-clamp-1 font-semibold text-on-surface transition-colors group-hover:text-primary">
             {event.name}
           </h3>
           <div className="mt-1 flex items-center gap-1 text-on-surface-variant">
             <MapPin className="h-3.5 w-3.5" />
-            <p className="text-label-md">
+            <p className="text-sm">
               {[event.locationName, event.time].filter(Boolean).join(" · ")}
             </p>
           </div>

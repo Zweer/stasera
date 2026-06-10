@@ -50,7 +50,7 @@ export function SuggestionsClient() {
   if (loading) {
     return (
       <div className="flex min-h-[60dvh] items-center justify-center">
-        <p className="text-label-md animate-pulse text-on-surface-variant">
+        <p className="text-sm animate-pulse text-on-surface-variant">
           Caricamento...
         </p>
       </div>
@@ -62,17 +62,17 @@ export function SuggestionsClient() {
   }
 
   return (
-    <div className="px-container-margin pt-lg">
-      <header className="mb-lg">
-        <h2 className="text-headline-lg-mobile text-on-surface md:text-headline-lg">
+    <div className="px-5 pt-6">
+      <header className="mb-6">
+        <h2 className="text-2xl text-on-surface md:text-3xl">
           Suggerimenti per te
         </h2>
-        <p className="text-body-md mt-1 text-on-surface-variant">
+        <p className="text-base mt-1 text-on-surface-variant">
           Creati su misura per il tuo weekend a Genova.
         </p>
       </header>
 
-      <div className="mx-auto flex max-w-lg flex-col gap-lg">
+      <div className="mx-auto flex max-w-lg flex-col gap-6">
         {recs.map((rec) => (
           <SuggestionCard
             key={rec.id}
@@ -117,24 +117,24 @@ function SuggestionCard({
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
 
         {/* Tags + title overlay */}
-        <div className="absolute inset-x-0 bottom-0 px-md pb-6">
-          <div className="mb-sm flex gap-2">
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-6">
+          <div className="mb-2 flex gap-2">
             {event.genre && (
-              <span className="text-label-sm rounded-full border border-primary bg-primary/20 px-3 py-1 uppercase tracking-wider text-primary">
+              <span className="text-xs rounded-full border border-primary bg-primary/20 px-3 py-1 uppercase tracking-wider text-primary">
                 {event.genre}
               </span>
             )}
             {event.vibe && (
-              <span className="text-label-sm rounded-full border border-outline-variant bg-surface-container-high/80 px-3 py-1 text-on-surface-variant">
+              <span className="text-xs rounded-full border border-outline-variant bg-surface-container-high/80 px-3 py-1 text-on-surface-variant">
                 {event.vibe}
               </span>
             )}
           </div>
-          <h3 className="text-headline-md text-on-surface">{event.name}</h3>
+          <h3 className="text-xl text-on-surface">{event.name}</h3>
           {(event.locationName || event.time) && (
             <div className="mt-1 flex items-center gap-1 text-on-surface-variant">
               <MapPin className="h-4 w-4" />
-              <span className="text-label-md">
+              <span className="text-sm">
                 {[event.locationName, event.time].filter(Boolean).join(" · ")}
               </span>
             </div>
@@ -143,28 +143,28 @@ function SuggestionCard({
       </div>
 
       {/* Reason + actions */}
-      <div className="border-t border-outline-variant p-lg">
+      <div className="border-t border-outline-variant p-6">
         {reason && (
-          <div className="mb-lg flex items-start gap-md">
+          <div className="mb-6 flex items-start gap-4">
             <div className="rounded-lg bg-primary-container/20 p-2">
               <Sparkles className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-label-md mb-1 uppercase text-primary">
+              <p className="text-sm mb-1 uppercase text-primary">
                 Stasera's Reason
               </p>
-              <p className="text-body-md italic leading-relaxed text-on-surface">
+              <p className="text-base italic leading-relaxed text-on-surface">
                 "{reason}"
               </p>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-md">
+        <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
             onClick={onReject}
-            className="text-label-md flex items-center justify-center gap-2 rounded-xl border border-outline-variant px-6 py-4 text-on-surface-variant transition-all hover:bg-surface-container-high active:scale-95"
+            className="text-sm flex items-center justify-center gap-2 rounded-xl border border-outline-variant px-6 py-4 text-on-surface-variant transition-all hover:bg-surface-container-high active:scale-95"
           >
             <X className="h-4 w-4" />
             RIFIUTA
@@ -172,7 +172,7 @@ function SuggestionCard({
           <button
             type="button"
             onClick={onAccept}
-            className="text-label-md flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 font-bold text-on-primary shadow-lg shadow-primary/10 transition-all hover:brightness-110 active:scale-95"
+            className="text-sm flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 font-bold text-on-primary shadow-lg shadow-primary/10 transition-all hover:brightness-110 active:scale-95"
           >
             <Check className="h-4 w-4" />
             ACCETTA
@@ -185,31 +185,30 @@ function SuggestionCard({
 
 function EmptyState() {
   return (
-    <div className="flex min-h-[70dvh] flex-col items-center justify-center px-container-margin text-center">
-      <div className="relative mb-xl">
+    <div className="flex min-h-[70dvh] flex-col items-center justify-center px-6 text-center">
+      <div className="relative mb-12">
         <div className="flex h-48 w-48 items-center justify-center rounded-2xl border border-outline-variant bg-surface-container-low">
           <Sparkles className="h-16 w-16 text-outline opacity-40" />
         </div>
-        <div className="absolute -top-4 -right-4 h-24 w-24 animate-pulse rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      <h2 className="text-headline-lg-mobile text-on-surface">
+      <h2 className="w-full text-2xl font-semibold text-on-surface">
         I tuoi 3 suggerimenti arrivano venerdì
       </h2>
-      <p className="text-body-md mt-md max-w-sm text-on-surface-variant">
+      <p className="mt-3 w-full max-w-sm text-base text-on-surface-variant">
         Stiamo analizzando i nuovi eventi per preparare il tuo weekend perfetto.
       </p>
 
-      <div className="mt-xl flex flex-col gap-md">
+      <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
         <a
           href="/explore"
-          className="text-label-md flex items-center justify-center gap-md rounded-xl bg-primary px-8 py-4 font-bold text-on-primary shadow-lg transition-transform active:scale-95"
+          className="flex items-center justify-center rounded-xl bg-primary px-8 py-4 text-sm font-bold text-on-primary shadow-lg transition-transform active:scale-95"
         >
           Esplora Eventi
         </a>
         <a
           href="/chat"
-          className="text-label-md rounded-xl border border-outline-variant px-8 py-4 text-on-surface transition-colors hover:bg-surface-container active:scale-95"
+          className="rounded-xl border border-outline-variant px-8 py-4 text-sm text-on-surface transition-colors hover:bg-surface-container active:scale-95"
         >
           Chiedi un consiglio live
         </a>

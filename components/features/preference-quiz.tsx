@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useCallback, useState } from "react";
 import type {
   ComparisonOption,
@@ -80,9 +80,9 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       {/* Progress header */}
-      <header className="fixed top-0 left-0 z-50 flex h-16 w-full flex-col justify-center border-b border-outline-variant/30 bg-background/80 px-container-margin backdrop-blur-md">
+      <header className="fixed top-0 left-0 z-50 flex h-16 w-full flex-col justify-center border-b border-outline-variant/30 bg-background/80 px-5 backdrop-blur-md">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-label-md text-primary">
+          <span className="text-sm text-primary">
             Step {round + 1} di {total}
           </span>
           <button
@@ -103,7 +103,7 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
                 setReasons(null);
               }
             }}
-            className="text-label-md text-on-surface-variant transition-colors hover:text-primary"
+            className="text-sm text-on-surface-variant transition-colors hover:text-primary"
           >
             Salta
           </button>
@@ -116,19 +116,17 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-container-margin pt-24 pb-32">
+      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 pt-24 pb-32">
         {/* Headline */}
-        <section className="mb-lg">
-          <h1 className="text-headline-lg-mobile text-on-surface">
-            Cosa ti ispira di più?
-          </h1>
-          <p className="text-body-md mt-1 text-on-surface-variant">
+        <section className="mb-6">
+          <h1 className="text-2xl text-on-surface">Cosa ti ispira di più?</h1>
+          <p className="text-base mt-1 text-on-surface-variant">
             Scegli l'atmosfera perfetta per la tua serata.
           </p>
         </section>
 
         {/* Comparison cards */}
-        <section key={round} className="mb-xl grid grid-cols-2 gap-md">
+        <section key={round} className="mb-12 grid grid-cols-2 gap-4">
           <ComparisonCard
             option={currentPair.optionA}
             selected={chosen === "a"}
@@ -150,20 +148,20 @@ export function PreferenceQuiz({ pairs, onComplete }: QuizProps) {
             chosen ? "opacity-100" : "pointer-events-none opacity-0",
           )}
         >
-          <h2 className="text-headline-md mb-md text-on-surface">Perché?</h2>
+          <h2 className="text-xl mb-4 text-on-surface">Perché?</h2>
           {loading ? (
-            <p className="text-label-md animate-pulse text-on-surface-variant">
+            <p className="text-sm animate-pulse text-on-surface-variant">
               Analizzo la scelta...
             </p>
           ) : (
-            <div className="flex flex-wrap gap-sm">
+            <div className="flex flex-wrap gap-2">
               {reasons?.map((r) => (
                 <button
                   key={r.tag}
                   type="button"
                   onClick={() => handleReason(r)}
                   className={cn(
-                    "text-label-md flex items-center gap-1 rounded-full border px-md py-sm transition-all active:scale-95",
+                    "text-sm flex items-center gap-1 rounded-full border px-4 py-2 transition-all active:scale-95",
                     selectedReason === r.tag
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-outline-variant bg-surface text-on-surface-variant hover:border-primary hover:text-primary",
@@ -207,14 +205,14 @@ function ComparisonCard({
       <div className="absolute inset-0 bg-gradient-to-b from-surface-container-high to-surface-container" />
 
       {/* Content overlay */}
-      <div className="relative z-10 flex h-full flex-col justify-end p-md">
-        <span className="text-label-sm mb-1 uppercase tracking-wider text-primary">
+      <div className="relative z-10 flex h-full flex-col justify-end p-4">
+        <span className="text-xs mb-1 uppercase tracking-wider text-primary">
           {option.tags[0] ?? ""}
         </span>
-        <h3 className="text-headline-md leading-tight text-on-surface">
+        <h3 className="text-xl leading-tight text-on-surface">
           {option.title}
         </h3>
-        <p className="text-label-sm mt-1 line-clamp-2 text-on-surface-variant">
+        <p className="text-xs mt-1 line-clamp-2 text-on-surface-variant">
           {option.description}
         </p>
       </div>

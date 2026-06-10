@@ -109,37 +109,35 @@ export function ConfirmClient() {
   if (!data) return null;
 
   return (
-    <div className="space-y-lg px-container-margin pt-lg pb-32">
+    <div className="space-y-6 px-5 pt-6 pb-32">
       {/* Header */}
-      <section className="space-y-sm">
-        <h1 className="text-headline-lg-mobile text-on-surface">
-          Verifica i dati
-        </h1>
-        <p className="text-body-md text-on-surface-variant">
+      <section className="space-y-2">
+        <h1 className="text-2xl text-on-surface">Verifica i dati</h1>
+        <p className="text-base text-on-surface-variant">
           Controlla che i dati estratti siano corretti.
         </p>
       </section>
 
       {/* Form */}
-      <section className="space-y-md rounded-xl border border-outline-variant bg-surface-container-low p-lg">
+      <section className="space-y-4 rounded-xl border border-outline-variant bg-surface-container-low p-6">
         {/* Name */}
         <Field label="Nome Evento">
           <input
             type="text"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="text-body-lg w-full rounded-lg border border-outline-variant bg-surface-container-low px-md py-sm text-on-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
+            className="text-lg w-full rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2 text-on-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
           />
         </Field>
 
         {/* Date + Time */}
-        <div className="grid grid-cols-2 gap-md">
+        <div className="grid grid-cols-2 gap-4">
           <Field label="Data">
             <input
               type="date"
               value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-md py-sm text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2 text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </Field>
           <Field label="Ora">
@@ -147,7 +145,7 @@ export function ConfirmClient() {
               type="time"
               value={form.time}
               onChange={(e) => setForm({ ...form, time: e.target.value })}
-              className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-md py-sm text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2 text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </Field>
         </div>
@@ -158,13 +156,13 @@ export function ConfirmClient() {
             type="text"
             value={form.locationName}
             onChange={(e) => setForm({ ...form, locationName: e.target.value })}
-            className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-md py-sm text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2 text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           />
         </Field>
 
         {/* Genre chips */}
         <Field label="Genere">
-          <div className="flex flex-wrap gap-sm">
+          <div className="flex flex-wrap gap-2">
             {GENRES.map((g) => (
               <button
                 key={g}
@@ -173,7 +171,7 @@ export function ConfirmClient() {
                   setForm({ ...form, genre: form.genre === g ? "" : g })
                 }
                 className={cn(
-                  "text-label-sm rounded-full border px-md py-sm capitalize transition-colors",
+                  "text-xs rounded-full border px-4 py-2 capitalize transition-colors",
                   form.genre === g
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-outline-variant text-on-surface-variant hover:border-primary",
@@ -187,7 +185,7 @@ export function ConfirmClient() {
 
         {/* Vibe chips */}
         <Field label="Vibe">
-          <div className="flex flex-wrap gap-sm">
+          <div className="flex flex-wrap gap-2">
             {VIBES.map((v) => (
               <button
                 key={v}
@@ -196,7 +194,7 @@ export function ConfirmClient() {
                   setForm({ ...form, vibe: form.vibe === v ? "" : v })
                 }
                 className={cn(
-                  "text-label-sm rounded-full border px-md py-sm capitalize transition-colors",
+                  "text-xs rounded-full border px-4 py-2 capitalize transition-colors",
                   form.vibe === v
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-outline-variant text-on-surface-variant hover:border-primary",
@@ -211,11 +209,11 @@ export function ConfirmClient() {
 
       {/* Raw text preview */}
       {data.rawText && (
-        <section className="rounded-xl border border-secondary-container/40 bg-secondary-container/10 p-md">
-          <div className="mb-2 flex items-start gap-md">
+        <section className="rounded-xl border border-secondary-container/40 bg-secondary-container/10 p-4">
+          <div className="mb-2 flex items-start gap-4">
             <Sparkles className="h-5 w-5 shrink-0 text-secondary" />
             <div>
-              <h4 className="text-label-md text-on-secondary-container">
+              <h4 className="text-sm text-on-secondary-container">
                 Testo estratto dall'immagine
               </h4>
               <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant whitespace-pre-wrap">
@@ -227,24 +225,24 @@ export function ConfirmClient() {
       )}
 
       {/* Actions */}
-      <section className="flex flex-col gap-md">
+      <section className="flex flex-col gap-4">
         <button
           type="button"
           onClick={handleConfirm}
           disabled={saving || !form.name || !form.date}
-          className="text-headline-md flex h-14 w-full items-center justify-center gap-md rounded-xl bg-primary text-on-primary shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50"
+          className="text-xl flex h-14 w-full items-center justify-center gap-4 rounded-xl bg-primary text-on-primary shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50"
         >
           Conferma e Pubblica
           <Send className="h-5 w-5" />
         </button>
-        <div className="flex items-center justify-center gap-md">
+        <div className="flex items-center justify-center gap-4">
           <button
             type="button"
             onClick={() => {
               sessionStorage.removeItem("extractedEvent");
               router.push("/upload");
             }}
-            className="text-label-md flex items-center gap-1 text-on-surface-variant transition-colors hover:text-primary"
+            className="text-sm flex items-center gap-1 text-on-surface-variant transition-colors hover:text-primary"
           >
             <Trash2 className="h-4 w-4" />
             Elimina
@@ -264,7 +262,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <span className="text-label-md text-outline">{label}</span>
+      <span className="text-sm text-outline">{label}</span>
       {children}
     </div>
   );

@@ -33,7 +33,7 @@ export function BottomNav() {
               className={cn("h-6 w-6", active && "fill-primary/20")}
               strokeWidth={active ? 2.5 : 1.5}
             />
-            <span className="text-label-sm mt-1">{item.label}</span>
+            <span className="text-xs mt-1">{item.label}</span>
           </Link>
         );
       })}
