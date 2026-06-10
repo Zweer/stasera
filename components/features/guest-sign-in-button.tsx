@@ -15,7 +15,7 @@ export function GuestSignInButton() {
     <button
       type="button"
       onClick={handleGuest}
-      className="text-label-md block w-full py-4 text-on-surface-variant transition-colors duration-200 hover:text-primary"
+      className="w-full py-4 text-sm text-[#d8c3ad] transition-colors hover:text-[#ffc174]"
     >
       Continua come ospite
     </button>

@@ -14,10 +14,10 @@ export function GoogleSignInButton() {
     <button
       type="button"
       onClick={handleSignIn}
-      className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#f0e0d1] text-sm font-medium text-[#19120a] shadow-xl transition-all duration-200 active:scale-95"
+      className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#f0e0d1] text-sm font-medium text-[#19120a] shadow-xl transition-transform active:scale-95"
     >
       <svg
-        className="h-5 w-5"
+        className="h-5 w-5 shrink-0"
         viewBox="0 0 24 24"
         aria-label="Google"
         role="img"
