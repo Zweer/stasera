@@ -103,8 +103,8 @@ export function ExploreClient() {
         </p>
       ) : (
         <div className="space-y-4">
-          {filtered.map((event) => (
-            <EventCard key={event.id} event={event} />
+          {filtered.map((event, i) => (
+            <EventCard key={event.id} event={event} priority={i === 0} />
           ))}
         </div>
       )}
@@ -121,7 +121,7 @@ export function ExploreClient() {
   );
 }
 
-function EventCard({ event }: { event: Event }) {
+function EventCard({ event, priority }: { event: Event; priority?: boolean }) {
   return (
     <article className="group flex h-36 cursor-pointer overflow-hidden rounded-xl border border-outline-variant bg-surface-container transition-transform active:scale-[0.98]">
       <div className="relative h-full w-1/3 overflow-hidden bg-surface-container-high">
@@ -131,6 +131,7 @@ function EventCard({ event }: { event: Event }) {
             alt={event.name}
             fill
             unoptimized
+            priority={priority}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (

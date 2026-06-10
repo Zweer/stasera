@@ -16,6 +16,7 @@ export function TopBar() {
         <Link
           href="/profile"
           className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-surface-container-high active:scale-95"
+          aria-label="Profilo"
         >
           <Bell className="h-5 w-5 text-on-surface-variant" />
         </Link>
