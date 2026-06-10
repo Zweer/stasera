@@ -8,7 +8,7 @@ import { ProfileClient } from "./client";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/login");
+  if (!session) redirect("/");
 
   const result = await db
     .select({ preferenceVector: userPreferences.preferenceVector })
@@ -17,5 +17,12 @@ export default async function ProfilePage() {
     .limit(1);
 
   const profile = result[0]?.preferenceVector ?? null;
-  return <ProfileClient profile={profile} />;
+
+  return (
+    <ProfileClient
+      profile={profile}
+      userName={session.user.name}
+      userImage={session.user.image}
+    />
+  );
 }

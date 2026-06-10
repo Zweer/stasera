@@ -6,7 +6,7 @@ import { OnboardingClient } from "./client";
 
 export default async function OnboardingPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/login");
+  if (!session) redirect("/");
 
   const pairs = await generatePairs();
   return <OnboardingClient pairs={pairs} />;

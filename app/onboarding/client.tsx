@@ -12,6 +12,9 @@ export function OnboardingClient({ pairs }: Props) {
   const router = useRouter();
 
   return (
-    <PreferenceQuiz pairs={pairs} onComplete={() => router.push("/profile")} />
+    <PreferenceQuiz
+      pairs={pairs}
+      onComplete={() => router.push("/suggestions")}
+    />
   );
 }
