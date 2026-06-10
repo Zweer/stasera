@@ -40,5 +40,9 @@ export async function GET(): Promise<NextResponse> {
     .orderBy(desc(recommendations.score))
     .limit(3);
 
-  return NextResponse.json(rows);
+  return NextResponse.json(rows, {
+    headers: {
+      "Cache-Control": "private, s-maxage=300, stale-while-revalidate=600",
+    },
+  });
 }

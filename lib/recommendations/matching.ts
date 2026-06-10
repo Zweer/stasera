@@ -31,7 +31,12 @@ export async function runMatchingJob(): Promise<MatchingResult[]> {
     let count = 0;
 
     for (const { event, score } of top) {
-      const reason = await generateReason(event.name, event.genre, event.vibe);
+      const reason = await generateReason(
+        event.id,
+        event.name,
+        event.genre,
+        event.vibe,
+      );
       await db.insert(recommendations).values({
         userId: profile.userId,
         eventId: event.id,
@@ -66,15 +71,22 @@ async function getWeekendEvents() {
     );
 }
 
+const reasonCache = new Map<string, string>();
+
 async function generateReason(
+  eventId: string,
   name: string,
   genre: string | null,
   vibe: string | null,
 ): Promise<string> {
+  const cached = reasonCache.get(eventId);
+  if (cached) return cached;
+
   const { object } = await generateObject({
     model: google("gemini-3.5-flash"),
     schema: z.object({ reason: z.string() }),
     prompt: `Genera una breve motivazione (max 15 parole, in italiano) per consigliare questo evento: "${name}" (genere: ${genre ?? "vario"}, vibe: ${vibe ?? "non specificata"}). Inizia con "Perché" o "Te lo consiglio perché".`,
   });
+  reasonCache.set(eventId, object.reason);
   return object.reason;
 }

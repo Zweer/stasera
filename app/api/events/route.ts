@@ -12,5 +12,12 @@ export async function GET(): Promise<NextResponse> {
     .orderBy(desc(events.date))
     .limit(50);
 
-  return NextResponse.json({ count: rows.length, events: rows });
+  return NextResponse.json(
+    { count: rows.length, events: rows },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
+      },
+    },
+  );
 }

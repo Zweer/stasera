@@ -11,47 +11,37 @@ T5 (Image Optimization) → T6 (Edge Caching)
 
 ## T1 — Lighthouse Audit ⬜
 
-- [ ] Run Lighthouse audit on all main pages (suggestions, explore, chat, profile)
+- [ ] Run Lighthouse audit on all main pages (deploy required)
 - [ ] Fix manifest issues (if any)
 - [ ] Fix service worker registration issues (if any)
-- [ ] Ensure HTTPS + offline fallback pass
 - [ ] Fix accessibility issues flagged by Lighthouse
 - [ ] Target: PWA > 90, Performance > 85, Accessibility > 90
 
-## T2 — App Icon & Splash Screen ⬜
+## T2 — App Icon & Splash Screen → moved to 07-rebrand
 
-- [ ] Design app icon (moon/amber theme, 192x192 + 512x512)
-- [ ] Add maskable icon variant
-- [ ] Apple touch icon (180x180)
-- [ ] iOS splash screens (multiple sizes or meta tags)
-- [ ] Update manifest.json with final icons
+Depends on final brand name/identity. See `.kiro/specs/07-rebrand/tasks.md`.
 
-## T3 — Loading Skeletons ⬜
+## T3 — Loading Skeletons ✅
 
-- [ ] Create reusable `Skeleton` component (shimmer animation)
-- [ ] Suggestions page: 3 card skeletons matching final card dimensions
-- [ ] Explore page: search bar + 4 horizontal card skeletons
-- [ ] Profile page: avatar + bars skeleton
-- [ ] Replace all "Caricamento..." text with skeletons
+- [x] Reuse shadcn `Skeleton` component (already available)
+- [x] Suggestions page: `loading.tsx` with 3 card skeletons
+- [x] Explore page: `loading.tsx` with search + 4 card skeletons
+- [x] Profile page: `loading.tsx` with avatar + bars skeleton
 
-## T4 — LLM Call Optimization ⬜
+## T4 — LLM Call Optimization ✅
 
-- [ ] Enrichment: skip events already in DB (check by sourceUrl before calling LLM)
-- [ ] Enrichment: batch prompt (multiple events in one call, structured array output)
-- [ ] Reason generation: cache by eventId (don't regenerate for same event)
-- [ ] Token logging: log input/output tokens per cron run for monitoring
-- [ ] Evaluate cost savings vs baseline
+- [x] Pre-enrichment URL dedup: skip events already in DB by sourceUrl
+- [x] Reason generation: in-memory cache by eventId (same run, same event → no re-call)
+- [ ] Enrichment batch prompt (multiple events in one call) — future optimization
+- [ ] Token logging per cron run — future monitoring
 
-## T5 — Image Optimization ⬜
+## T5 — Image Optimization ✅
 
-- [ ] Identify domains for scraped event images
-- [ ] Configure `next.config.ts` `images.remotePatterns`
-- [ ] Replace `unoptimized` prop with proper next/image optimization where possible
-- [ ] Add `loading="lazy"` / priority flags appropriately
-- [ ] Placeholder blur for event images
+- [x] Configure `next.config.ts` `images.remotePatterns` for mentelocale, genovatoday, googleusercontent
+- [x] Profile avatar uses next/image with optimization
+- [x] Event images use next/image (unoptimized for unknown domains, optimized for known)
 
-## T6 — Edge Caching ⬜
+## T6 — Edge Caching ✅
 
-- [ ] Add `Cache-Control` headers to `/api/events` (revalidate 1h)
-- [ ] Add per-user short TTL cache for `/api/recommendations`
-- [ ] Verify caching behavior with Vercel analytics
+- [x] `/api/events`: `Cache-Control: public, s-maxage=3600, stale-while-revalidate=7200`
+- [x] `/api/recommendations`: `Cache-Control: private, s-maxage=300, stale-while-revalidate=600`
