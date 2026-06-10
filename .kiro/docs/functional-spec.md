@@ -57,8 +57,8 @@ L'app deve evocare la sensazione di scegliere cosa fare con gli amici il venerd�
 
 ### Icone
 
-- Material Symbols Outlined (Google)
-- Icona brand: `nightlight` (luna, richiama la sera)
+- Lucide React (shadcn-native, leggera)
+- Icona brand: `Moon` (luna, richiama la sera)
 
 ---
 
@@ -209,13 +209,13 @@ FONTI EVENTI → DATABASE → RACCOMANDAZIONE → UTENTE
 
 | Tab | Icona | Label |
 |---|---|---|
-| Home | `auto_awesome` | Suggerimenti |
-| Explore | `explore` | Esplora |
-| Chat | `chat_bubble` | Chat |
-| Profile | `person` | Profilo |
+| Home | `Sparkles` | Suggerimenti |
+| Explore | `Compass` | Esplora |
+| Chat | `MessageCircle` | Chat |
+| Profile | `User` | Profilo |
 
-- Tab attiva: icona filled + colore primary
-- Tab inattiva: icona outlined + colore secondario
+- Tab attiva: stroke più spesso + colore primary
+- Tab inattiva: stroke leggero + colore secondario
 - Stile: glass effect (semi-trasparente con blur)
 
 **Flussi senza bottom nav:**
@@ -266,33 +266,34 @@ Eventi da fonti diverse (MenteLocale + GenovaToday + upload utente) vengono conf
 
 ## 9. Roadmap
 
-### ✅ Completato
+### ✅ MVP Completato
 
 - Setup progetto (Next.js 16, Tailwind 4, shadcn/ui, PWA)
 - Autenticazione Google (Better Auth)
 - Database (Neon PostgreSQL + Drizzle ORM + migrazioni)
 - Scraper MenteLocale e GenovaToday
 - Pipeline arricchimento LLM (estrazione metadati con Gemini)
-- Upload screenshot → Gemini Vision → evento
+- Upload screenshot → Gemini Vision → conferma evento → salvataggio
 - Cron job giornaliero per scraping
 - Onboarding confronti a coppie + generazione opzioni "perché"
 - Calcolo profilo preferenze
 - Job raccomandazione (matching profilo ↔ eventi)
-- Pagina suggerimenti con 3 card + motivazione
-- Chat libera per re-ranking
+- Pagina suggerimenti con 3 card full-bleed + motivazione AI
+- Chat libera per re-ranking (streaming)
 - Deduplicazione cross-fonte
-- UI polish, dark mode
-
-### 🔜 In lavorazione
-
-- Implementazione UI completa (design system nuovo da Stitch)
-- Feedback loop (accettato/rifiutato → aggiorna profilo)
-- Push notification
+- Design system completo (Nocturnal Urban Pulse)
+- Feedback loop (accept/reject → aggiorna profilo: +0.2/-0.15 per tag)
+- Push notification (VAPID + web-push + SW + cron trigger)
+- Offline support (NetworkFirst cache per API con timeout 5s)
+- Pagina Esplora con search + filtri genere
+- Pagina conferma evento post-upload (form editabile)
+- Toast feedback su accept/reject (sonner)
+- Bottom nav 4 tab + top bar
+- Toggle notifiche push nel profilo
 
 ### 📋 Backlog (post-MVP)
 
-- Modalità ospite (senza login)
-- Offline support (cache ultimi consigli)
+- Modalità ospite (navigazione senza login)
 - Aggiunta fonti scraping custom (l'utente richiede un sito)
 - Selezione fonti per utente
 - Embeddings per matching semantico avanzato
@@ -307,15 +308,15 @@ Eventi da fonti diverse (MenteLocale + GenovaToday + upload utente) vengono conf
 |---|---|
 | Framework | Next.js 16 (App Router, full-stack) |
 | UI | shadcn/ui + Tailwind CSS 4 |
-| Font | Geist (headlines) + Inter (body) |
-| Icone | Material Symbols Outlined |
+| Font | Geist (headlines/labels) + Inter (body) |
+| Icone | Lucide React |
 | Auth | Better Auth (Google OAuth) |
 | Database | Neon PostgreSQL + pgvector |
 | ORM | Drizzle 1.0 |
-| LLM | Gemini 3.5 Flash (vision + text) |
+| LLM | Gemini 3.5 Flash via Vercel AI SDK 6 |
 | Hosting | Vercel (deploy, cron, edge) |
 | PWA | @serwist/turbopack |
-| Notifiche | Web Push API (VAPID) |
+| Notifiche | Web Push API (VAPID) + web-push |
 | Scraping | cheerio (server-side) |
 | Linting | Biome (non ESLint) |
 | Package manager | npm |

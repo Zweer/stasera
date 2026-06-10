@@ -23,33 +23,35 @@ T1 (Scoring) → T2 (Matching Job) → T3 (Suggestions UI) → T4 (Chat)
 - [x] Select top 3, generate reason text (LLM)
 - [x] Save recommendations to DB
 - [x] Protected with CRON_SECRET
+- [x] Returns MatchingResult[] with userId for push targeting
 
 ## T3 — Suggestions UI ✅
 
-- [x] Suggestions page with 3 recommendation cards
+- [x] Suggestions page with 3 recommendation cards (full-bleed image design)
 - [x] Card: event info + personalized reason + accept/reject
-- [x] Empty state (no recommendations yet)
-- [ ] Link from push notification (needs T5)
+- [x] Empty state ("I tuoi suggerimenti arrivano venerdì")
+- [x] Toast feedback on accept/reject (sonner)
+- [x] Link from push notification opens /suggestions
 
 ## T4 — Chat (Re-ranking) ✅
 
-- [x] Chat UI (input + streaming response)
-- [x] One-shot session (no history persistence)
+- [x] Chat UI (asymmetric bubbles, AI avatar, styled input)
+- [x] Streaming response with real-time display
 - [x] LLM interprets user's mood/request
 - [x] Re-rank events based on chat context
-- [ ] Update displayed suggestions (currently shows text response only)
 
-## T5 — Push Notifications ⬜
+## T5 — Push Notifications ✅
 
-- [ ] VAPID key generation and configuration
-- [ ] Subscription management (save endpoint to DB)
-- [ ] Notification sending logic (from cron job)
-- [ ] Permission prompt UI
-- [ ] Service worker push event handler
+- [x] VAPID key generation and configuration
+- [x] Subscription management (POST/DELETE /api/push)
+- [x] Notification sending logic (from cron job via web-push)
+- [x] Permission prompt UI (toggle in profile page)
+- [x] Service worker push + notificationclick handlers
+- [x] Cleanup expired subscriptions (410 Gone)
 
-## T6 — Feedback Loop ✅ (basic)
+## T6 — Feedback Loop ✅
 
 - [x] Accept/reject UI on recommendation cards
 - [x] Save feedback to DB (recommendation status update)
-- [ ] Preference vector adjustment based on feedback
-- [ ] Decay function (older feedback matters less)
+- [x] Preference vector adjustment: +0.2 (accepted) / -0.15 (rejected) per event tag
+- [x] Tags used: genre, vibe, energyLevel, dayMoment, indoorOutdoor
