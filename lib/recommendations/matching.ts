@@ -8,14 +8,19 @@ import { scoreEvents } from "./scoring";
 
 const TOP_N = 3;
 
-export async function runMatchingJob(): Promise<number> {
+export interface MatchingResult {
+  userId: string;
+  count: number;
+}
+
+export async function runMatchingJob(): Promise<MatchingResult[]> {
   // 1. Get weekend events
   const weekendEvents = await getWeekendEvents();
-  if (weekendEvents.length === 0) return 0;
+  if (weekendEvents.length === 0) return [];
 
   // 2. Get all users with profiles
   const profiles = await db.select().from(userPreferences);
-  let totalSaved = 0;
+  const results: MatchingResult[] = [];
 
   // 3. For each user, score + save top 3
   for (const profile of profiles) {
@@ -23,6 +28,7 @@ export async function runMatchingJob(): Promise<number> {
 
     const scored = scoreEvents(weekendEvents, profile.preferenceVector);
     const top = scored.slice(0, TOP_N);
+    let count = 0;
 
     for (const { event, score } of top) {
       const reason = await generateReason(event.name, event.genre, event.vibe);
@@ -32,11 +38,15 @@ export async function runMatchingJob(): Promise<number> {
         score,
         reason,
       });
-      totalSaved++;
+      count++;
+    }
+
+    if (count > 0) {
+      results.push({ userId: profile.userId, count });
     }
   }
 
-  return totalSaved;
+  return results;
 }
 
 async function getWeekendEvents() {

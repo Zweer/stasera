@@ -1,14 +1,10 @@
 "use client";
 
-import {
-  ArrowRightLeft,
-  Bell,
-  Globe,
-  LogOut,
-  Shield,
-} from "lucide-react";
+import { ArrowRightLeft, Bell, Globe, LogOut, Shield } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePushSubscription } from "@/hooks/use-push-subscription";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -20,13 +16,20 @@ interface Props {
 
 export function ProfileClient({ profile, userName, userImage }: Props) {
   const router = useRouter();
+  const {
+    state: pushState,
+    subscribed,
+    subscribe,
+    unsubscribe,
+  } = usePushSubscription();
 
   const sorted = profile
     ? Object.entries(profile)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 5)
     : [];
-  const maxWeight = sorted.length > 0 ? Math.max(...sorted.map(([, w]) => Math.abs(w))) : 1;
+  const maxWeight =
+    sorted.length > 0 ? Math.max(...sorted.map(([, w]) => Math.abs(w))) : 1;
 
   return (
     <div className="space-y-lg px-container-margin pt-lg pb-32">
@@ -35,9 +38,11 @@ export function ProfileClient({ profile, userName, userImage }: Props) {
         <div className="relative">
           <div className="h-24 w-24 rounded-full border-2 border-primary p-1">
             {userImage ? (
-              <img
+              <Image
                 src={userImage}
                 alt={userName ?? "Avatar"}
+                width={88}
+                height={88}
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
@@ -110,8 +115,16 @@ export function ProfileClient({ profile, userName, userImage }: Props) {
           Impostazioni
         </h3>
         <div className="divide-y divide-outline-variant/30 overflow-hidden rounded-xl border border-outline-variant bg-surface-container">
-          <SettingsRow icon={Bell} label="Notifiche" sub="Aggiornamenti live e inviti" />
-          <SettingsRow icon={Shield} label="Privacy & Sicurezza" sub="Gestisci dati e visibilità" />
+          <NotificationToggle
+            pushState={pushState}
+            subscribed={subscribed}
+            onToggle={subscribed ? unsubscribe : subscribe}
+          />
+          <SettingsRow
+            icon={Shield}
+            label="Privacy & Sicurezza"
+            sub="Gestisci dati e visibilità"
+          />
           <SettingsRow icon={Globe} label="Lingua" sub="Italiano (IT)" />
         </div>
 
@@ -133,10 +146,57 @@ export function ProfileClient({ profile, userName, userImage }: Props) {
 
       {/* Footer */}
       <footer className="py-xl text-center">
-        <p className="text-[12px] text-on-surface-variant">
-          Stasera v0.1.0
-        </p>
+        <p className="text-[12px] text-on-surface-variant">Stasera v0.1.0</p>
       </footer>
+    </div>
+  );
+}
+
+function NotificationToggle({
+  pushState,
+  subscribed,
+  onToggle,
+}: {
+  pushState: string;
+  subscribed: boolean;
+  onToggle: () => void;
+}) {
+  const disabled = pushState === "denied" || pushState === "unsupported";
+
+  return (
+    <div className="flex items-center justify-between p-md">
+      <div className="flex items-center gap-md">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-high">
+          <Bell className="h-5 w-5 text-on-surface" />
+        </div>
+        <div>
+          <p className="text-body-md text-on-surface">Notifiche</p>
+          <p className="text-[12px] text-on-surface-variant">
+            {pushState === "denied"
+              ? "Bloccate dal browser"
+              : pushState === "unsupported"
+                ? "Non supportate"
+                : "Suggerimenti weekend"}
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onToggle}
+        disabled={disabled}
+        className={cn(
+          "relative h-6 w-12 rounded-full transition-colors",
+          subscribed ? "bg-primary" : "bg-outline-variant",
+          disabled && "opacity-40",
+        )}
+      >
+        <span
+          className={cn(
+            "absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-transform",
+            subscribed ? "translate-x-6 bg-on-primary" : "bg-on-surface",
+          )}
+        />
+      </button>
     </div>
   );
 }
