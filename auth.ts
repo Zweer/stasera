@@ -1,5 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { anonymous } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 
@@ -12,8 +14,22 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   socialProviders: {
     google: {
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+      clientId: process.env.AUTH_GOOGLE_ID ?? "",
+      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
     },
   },
+  plugins: [
+    anonymous({
+      emailDomainName: "guest.stasera.app",
+      async onLinkAccount({ anonymousUser, newUser }) {
+        // Transfer guest-uploaded events to the new user
+        const guestId = anonymousUser.user.id;
+        const realId = (newUser as { user: { id: string } }).user.id;
+        await db
+          .update(schema.events)
+          .set({ source: `upload:${realId}` })
+          .where(eq(schema.events.source, `upload:${guestId}`));
+      },
+    }),
+  ],
 });

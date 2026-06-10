@@ -2,6 +2,7 @@
 
 import { Moon } from "lucide-react";
 import { GoogleSignInButton } from "@/components/features/google-sign-in-button";
+import { GuestSignInButton } from "@/components/features/guest-sign-in-button";
 
 export function WelcomeHero() {
   return (
@@ -38,6 +39,7 @@ export function WelcomeHero() {
         {/* CTA */}
         <div className="w-full space-y-md">
           <GoogleSignInButton />
+          <GuestSignInButton />
         </div>
 
         {/* Decorative dots */}
