@@ -20,7 +20,10 @@ export function UploadClient() {
         body: formData,
       });
       if (res.ok) {
-        // TODO: navigate to confirm page with extracted data
+        const data = await res.json();
+        // Store extracted data and navigate to confirm
+        sessionStorage.setItem("extractedEvent", JSON.stringify(data));
+        window.location.href = "/upload/confirm";
       }
     } finally {
       setUploading(false);
@@ -127,9 +130,7 @@ export function UploadClient() {
         <div className="flex items-start gap-md rounded-xl border border-outline-variant bg-surface-container p-md">
           <Lightbulb className="h-5 w-5 shrink-0 text-tertiary" />
           <div className="space-y-1">
-            <h3 className="text-label-md text-on-surface">
-              Tips per l'upload
-            </h3>
+            <h3 className="text-label-md text-on-surface">Tips per l'upload</h3>
             <p className="text-label-sm leading-relaxed text-on-surface-variant">
               Assicurati che la data e il luogo siano visibili nello screenshot.
             </p>

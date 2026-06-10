@@ -1,8 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
-import { dedup } from "@/lib/dedup";
-import { enrichEvents, saveEnrichedEvents } from "@/lib/enrichment";
+import { enrichEvents } from "@/lib/enrichment";
 import type { RawEvent } from "@/lib/scrapers/types";
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -24,10 +23,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       {
         role: "user",
         content: [
-          {
-            type: "image",
-            image: `data:${mimeType};base64,${base64}`,
-          },
+          { type: "image", image: `data:${mimeType};base64,${base64}` },
           {
             type: "text",
             text: "Estrai tutto il testo visibile in questa immagine di un evento a Genova. Includi: nome evento, data, luogo, orario, prezzo, descrizione. Rispondi solo con il testo estratto, senza commenti.",
@@ -37,7 +33,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     ],
   });
 
-  // 2. Build a RawEvent from OCR text
+  // 2. Enrich (extract structured metadata)
   const raw: RawEvent = {
     title: text.split("\n")[0] || "Evento da screenshot",
     date: "",
@@ -47,15 +43,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     source: "upload",
   };
 
-  // 3. Enrich + dedup + save
   const enriched = await enrichEvents([raw]);
-  const fresh = await dedup(enriched);
-  const saved = await saveEnrichedEvents(fresh);
 
+  // Return extracted data for user confirmation (don't save yet)
   return NextResponse.json({
     ok: true,
-    extracted: text,
+    rawText: text,
     event: enriched[0]?.enriched ?? null,
-    saved,
   });
 }
