@@ -38,9 +38,9 @@ T1 (Anonymous Auth) → T2 (Middleware) → T3 (UI Prompts)
 - [x] Anonymous user auto-deleted by plugin after link
 - [x] Redirect to onboarding after merge (handled by root page.tsx)
 
-## T5 — Testing ⬜
+## T5 — Testing ✅
 
-- [ ] E2E: guest can browse explore without login
-- [ ] E2E: guest upload → sign up → event preserved
-- [ ] E2E: guest cannot access profile/onboarding
-- [ ] E2E: chat limit enforced for guests
+- [x] E2E: guest can browse explore without login
+- [x] E2E: guest upload → sign up → event preserved
+- [x] E2E: guest cannot access profile/onboarding
+- [x] E2E: chat limit enforced for guests
