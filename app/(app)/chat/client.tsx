@@ -150,7 +150,7 @@ function AiBubble({
         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-container">
           <Sparkles className="h-3.5 w-3.5 text-on-primary-container" />
         </div>
-        <span className="text-xs text-on-surface-variant">Stasera AI</span>
+        <span className="text-xs text-on-surface-variant">InGiro AI</span>
       </div>
       <div className="rounded-tr-xl rounded-br-xl rounded-bl-xl border border-outline-variant bg-surface-container-high p-4 shadow-lg">
         {loading ? (

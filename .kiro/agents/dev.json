@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "description": "Development agent for Stasera — PWA che consiglia cosa fare il sabato sera a Genova",
+  "description": "Development agent for InGiro — PWA che consiglia cosa fare il sabato sera a Genova",
   "prompt": "file://../prompts/dev.md",
   "resources": ["file://README.md", "file://.kiro/steering/**/*.md"],
   "tools": [

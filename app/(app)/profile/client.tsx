@@ -145,7 +145,7 @@ export function ProfileClient({ profile, userName, userImage }: Props) {
 
       {/* Footer */}
       <footer className="py-12 text-center">
-        <p className="text-[12px] text-on-surface-variant">Stasera v0.1.0</p>
+        <p className="text-[12px] text-on-surface-variant">InGiro v0.1.0</p>
       </footer>
     </div>
   );

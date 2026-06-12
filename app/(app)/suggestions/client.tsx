@@ -151,7 +151,7 @@ function SuggestionCard({
             </div>
             <div>
               <p className="text-sm mb-1 uppercase text-primary">
-                Stasera's Reason
+                InGiro's Reason
               </p>
               <p className="text-base italic leading-relaxed text-on-surface">
                 "{reason}"

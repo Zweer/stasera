@@ -1,8 +1,8 @@
-# Stasera
+# InGiro
 
 App PWA che consiglia cosa fare il sabato sera a Genova, in base alle tue preferenze.
 
-**URL**: `stasera.vercel.app`
+**URL**: `ingiro.vercel.app`
 
 ## Concept
 
@@ -166,7 +166,7 @@ Solo amici per ora (no waitlist, no rate limiting pesante). Multi-utente da subi
 
 - **Quando**: venerdì alle 14:00 e sabato alle 14:00 (Vercel Cron)
 - **Trigger**: dopo che il job di raccomandazione genera i 3 suggerimenti
-- **Contenuto**: "Stasera ha 3 idee per te! 🎉" → apre `/suggestions`
+- **Contenuto**: "InGiro ha 3 idee per te! 🎉" → apre `/suggestions`
 - **Tech**: web-push (VAPID), Service Worker push event handler, subscription salvata su Neon
 - **Gestione**: toggle on/off nella pagina profilo, cleanup automatico subscription scadute (410)
 

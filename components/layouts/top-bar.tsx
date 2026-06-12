@@ -10,7 +10,7 @@ export function TopBar() {
         <Link href="/suggestions" className="flex items-center gap-2">
           <Moon className="h-6 w-6 fill-primary text-primary" />
           <span className="font-display text-2xl font-bold tracking-tighter text-primary">
-            Stasera
+            InGiro
           </span>
         </Link>
         <Link

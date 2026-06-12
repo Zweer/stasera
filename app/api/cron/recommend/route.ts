@@ -14,7 +14,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   await Promise.allSettled(
     results.map((r) =>
       sendPushToUser(r.userId, {
-        title: "Stasera ha 3 idee per te! 🎉",
+        title: "InGiro ha 3 idee per te! 🎉",
         body: "I tuoi suggerimenti per il weekend sono pronti.",
         url: "/suggestions",
       }),

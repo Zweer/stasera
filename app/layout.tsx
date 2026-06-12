@@ -19,14 +19,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "Stasera",
-  title: { default: "Stasera", template: "%s | Stasera" },
-  description: "Cosa facciamo stasera a Genova?",
+  applicationName: "InGiro",
+  title: { default: "InGiro", template: "%s | InGiro" },
+  description: "Cosa c'è in giro stasera a Genova?",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Stasera",
+    title: "InGiro",
   },
 };
 

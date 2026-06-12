@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
   const result = streamText({
     model: google("gemini-3.5-flash"),
-    prompt: `Sei l'assistente dell'app "Stasera" che consiglia eventi a Genova.
+    prompt: `Sei l'assistente dell'app "InGiro" che consiglia eventi a Genova.
 
 L'utente dice: "${message}"
 

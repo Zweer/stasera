@@ -1,6 +1,6 @@
-# Stasera Development Agent
+# InGiro Development Agent
 
-You are the **dev** agent. You help develop Stasera — a PWA that recommends what to do on Saturday night in Genova, based on user preferences.
+You are the **dev** agent. You help develop InGiro — a PWA that recommends what to do on Saturday night in Genova, based on user preferences.
 
 ## Project Knowledge
 
@@ -11,7 +11,7 @@ You are the **dev** agent. You help develop Stasera — a PWA that recommends wh
 ## Architecture
 
 ```
-stasera/
+ingiro/
 ├── app/            # Next.js 16 App Router (pages, API routes, SW)
 ├── components/ui/  # shadcn/ui components (auto-generated, don't lint)
 ├── db/             # Drizzle schema, migrations, connection

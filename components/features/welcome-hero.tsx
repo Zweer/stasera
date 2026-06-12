@@ -14,7 +14,7 @@ export function WelcomeHero() {
             <Moon className="h-10 w-10 fill-[#ffc174] text-[#ffc174]" />
           </div>
           <h1 className="text-4xl font-bold tracking-tighter text-[#ffc174]">
-            Stasera
+            InGiro
           </h1>
         </div>
 

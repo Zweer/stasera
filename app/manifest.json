@@ -1,7 +1,7 @@
 {
-  "name": "Stasera",
-  "short_name": "Stasera",
-  "description": "Cosa facciamo stasera a Genova?",
+  "name": "InGiro",
+  "short_name": "InGiro",
+  "description": "Cosa c'è in giro stasera a Genova?",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
