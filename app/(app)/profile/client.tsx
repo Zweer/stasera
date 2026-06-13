@@ -13,7 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useState } from "react";
 import { usePushSubscription } from "@/hooks/use-push-subscription";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -224,53 +223,24 @@ function segmentProfile(profile: Record<string, number>) {
 }
 
 function TasteProfile({ profile }: { profile: Record<string, number> }) {
-  const [updating, setUpdating] = useState(false);
-  const [activeTag, setActiveTag] = useState<string | null>(null);
   const { genre, vibe, energy, indoorOutdoor, dayMoment } =
     segmentProfile(profile);
-
-  const handleOverride = async (
-    tag: string,
-    action: "boost" | "reset" | "penalize",
-  ) => {
-    setUpdating(true);
-    await fetch("/api/preferences/override", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag, action }),
-    });
-    setActiveTag(null);
-    setUpdating(false);
-    window.location.reload();
-  };
 
   return (
     <section className="space-y-4">
       <h3 className="text-xl text-primary">I tuoi Gusti</h3>
 
-      {/* Genre bars */}
+      {/* Genre sliders */}
       {genre.length > 0 && (
         <DimensionCard title="Genere">
-          <TagBars
-            entries={genre}
-            activeTag={activeTag}
-            updating={updating}
-            onTagClick={setActiveTag}
-            onOverride={handleOverride}
-          />
+          <CenteredSliders entries={genre} />
         </DimensionCard>
       )}
 
-      {/* Vibe bars */}
+      {/* Vibe sliders */}
       {vibe.length > 0 && (
         <DimensionCard title="Atmosfera">
-          <TagBars
-            entries={vibe}
-            activeTag={activeTag}
-            updating={updating}
-            onTagClick={setActiveTag}
-            onOverride={handleOverride}
-          />
+          <CenteredSliders entries={vibe} />
         </DimensionCard>
       )}
 
@@ -296,10 +266,10 @@ function TasteProfile({ profile }: { profile: Record<string, number> }) {
         </DimensionCard>
       )}
 
-      {/* Day moment heatmap */}
+      {/* Day moment pills */}
       {Object.keys(dayMoment).length > 0 && (
         <DimensionCard title="Quando">
-          <MomentHeatmap weights={dayMoment} />
+          <MomentPills weights={dayMoment} />
         </DimensionCard>
       )}
     </section>
@@ -323,59 +293,51 @@ function DimensionCard({
   );
 }
 
-function TagBars({
-  entries,
-  activeTag,
-  updating,
-  onTagClick,
-  onOverride,
-}: {
-  entries: [string, number][];
-  activeTag: string | null;
-  updating: boolean;
-  onTagClick: (tag: string | null) => void;
-  onOverride: (tag: string, action: "boost" | "reset" | "penalize") => void;
-}) {
-  const maxWeight = Math.max(...entries.map(([, w]) => Math.abs(w)), 0.1);
-
+function CenteredSliders({ entries }: { entries: [string, number][] }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {entries.map(([tag, weight]) => {
-        const pct = Math.round((Math.abs(weight) / maxWeight) * 100);
+        // Normalize weight to -1...+1 range, clamp
+        const normalized = Math.max(-1, Math.min(1, weight));
+        // Position: 0% = -1, 50% = 0, 100% = +1
+        const position = (normalized + 1) / 2;
+
         return (
           <div key={tag}>
-            <button
-              type="button"
-              onClick={() => onTagClick(activeTag === tag ? null : tag)}
-              className="flex w-full items-center justify-between"
-            >
-              <span className="text-sm capitalize text-on-surface">{tag}</span>
-              <span
-                className={cn(
-                  "text-xs",
-                  weight > 0 ? "text-primary" : "text-error",
-                )}
-              >
-                {weight > 0 ? "+" : ""}
-                {weight.toFixed(1)}
-              </span>
-            </button>
-            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-container-highest">
+            <span className="mb-1.5 block text-sm capitalize text-on-surface">
+              {tag}
+            </span>
+            <div className="relative h-5">
+              {/* Track */}
+              <div className="absolute top-1/2 h-1.5 w-full -translate-y-1/2 rounded-full bg-surface-container-highest" />
+              {/* Center mark */}
+              <div className="absolute top-1/2 left-1/2 h-3 w-px -translate-x-1/2 -translate-y-1/2 bg-outline-variant" />
+              {/* Fill from center */}
               <div
                 className={cn(
-                  "h-full rounded-full transition-all",
-                  weight > 0 ? "bg-primary" : "bg-error",
+                  "absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full",
+                  normalized >= 0 ? "bg-primary" : "bg-error",
                 )}
-                style={{ width: `${pct}%` }}
+                style={
+                  normalized >= 0
+                    ? { left: "50%", width: `${normalized * 50}%` }
+                    : {
+                        left: `${position * 100}%`,
+                        width: `${Math.abs(normalized) * 50}%`,
+                      }
+                }
+              />
+              {/* Thumb */}
+              <div
+                className={cn(
+                  "absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-sm transition-all",
+                  normalized >= 0
+                    ? "border-primary bg-primary"
+                    : "border-error bg-error",
+                )}
+                style={{ left: `${position * 100}%` }}
               />
             </div>
-            {activeTag === tag && (
-              <OverrideButtons
-                tag={tag}
-                updating={updating}
-                onOverride={onOverride}
-              />
-            )}
           </div>
         );
       })}
@@ -392,7 +354,6 @@ function SpectrumSlider({
   displayLabels: string[];
   weights: Record<string, number>;
 }) {
-  // Calculate position as weighted average (0 = left, 1 = right)
   let totalWeight = 0;
   let weightedPos = 0;
   for (let i = 0; i < labels.length; i++) {
@@ -407,16 +368,14 @@ function SpectrumSlider({
 
   return (
     <div>
-      <div className="relative h-6">
-        {/* Track */}
-        <div className="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-surface-container-highest" />
-        {/* Indicator */}
+      <div className="relative h-5">
+        <div className="absolute top-1/2 h-1.5 w-full -translate-y-1/2 rounded-full bg-surface-container-highest" />
         <div
-          className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-primary shadow-md transition-all"
+          className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-primary shadow-sm transition-all"
           style={{ left: `${position * 100}%` }}
         />
       </div>
-      <div className="mt-1 flex justify-between">
+      <div className="mt-1.5 flex justify-between">
         {displayLabels.map((label) => (
           <span key={label} className="text-xs text-on-surface-variant">
             {label}
@@ -427,80 +386,39 @@ function SpectrumSlider({
   );
 }
 
-function MomentHeatmap({ weights }: { weights: Record<string, number> }) {
+function MomentPills({ weights }: { weights: Record<string, number> }) {
   const maxW = Math.max(...Object.values(weights).map(Math.abs), 0.1);
-  const labels = ["Matt", "Pom", "Ape", "Sera", "Notte"];
+  const labels = ["Mattina", "Pome", "Aperitivo", "Sera", "Notte"];
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       {DAY_MOMENT.map((key, i) => {
         const w = weights[key] ?? 0;
         const intensity = Math.abs(w) / maxW;
+
         return (
-          <div key={key} className="flex flex-1 flex-col items-center gap-1.5">
-            <div
-              className={cn(
-                "h-8 w-full rounded-lg border transition-all",
-                w > 0
-                  ? "border-primary/30"
-                  : w < 0
-                    ? "border-error/30"
-                    : "border-outline-variant",
-              )}
-              style={{
-                backgroundColor:
-                  w > 0
-                    ? `oklch(0.8 0.15 75 / ${intensity * 0.6 + 0.1})`
-                    : w < 0
-                      ? `oklch(0.7 0.15 25 / ${intensity * 0.4})`
-                      : "transparent",
-              }}
-            />
-            <span className="text-[10px] text-on-surface-variant">
-              {labels[i]}
-            </span>
-          </div>
+          <span
+            key={key}
+            className={cn(
+              "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+              w > 0
+                ? "border border-primary text-primary"
+                : w < 0
+                  ? "border border-error/40 text-error/70"
+                  : "border border-outline-variant text-on-surface-variant",
+            )}
+            style={
+              w > 0
+                ? {
+                    backgroundColor: `oklch(0.8 0.13 75 / ${intensity * 0.35 + 0.05})`,
+                  }
+                : undefined
+            }
+          >
+            {labels[i]}
+          </span>
         );
       })}
-    </div>
-  );
-}
-
-function OverrideButtons({
-  tag,
-  updating,
-  onOverride,
-}: {
-  tag: string;
-  updating: boolean;
-  onOverride: (tag: string, action: "boost" | "reset" | "penalize") => void;
-}) {
-  return (
-    <div className="mt-2 flex gap-2">
-      <button
-        type="button"
-        disabled={updating}
-        onClick={() => onOverride(tag, "boost")}
-        className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs text-primary active:scale-95"
-      >
-        Mi piace
-      </button>
-      <button
-        type="button"
-        disabled={updating}
-        onClick={() => onOverride(tag, "reset")}
-        className="rounded-full border border-outline-variant px-3 py-1 text-xs text-on-surface-variant active:scale-95"
-      >
-        Neutro
-      </button>
-      <button
-        type="button"
-        disabled={updating}
-        onClick={() => onOverride(tag, "penalize")}
-        className="rounded-full border border-error/40 bg-error/10 px-3 py-1 text-xs text-error active:scale-95"
-      >
-        Non mi piace
-      </button>
     </div>
   );
 }
