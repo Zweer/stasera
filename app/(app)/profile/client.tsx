@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useState } from "react";
 import { usePushSubscription } from "@/hooks/use-push-subscription";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -223,28 +224,54 @@ function segmentProfile(profile: Record<string, number>) {
 }
 
 function TasteProfile({ profile }: { profile: Record<string, number> }) {
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
   const { genre, vibe, energy, indoorOutdoor, dayMoment } =
     segmentProfile(profile);
+
+  const handleOverride = async (
+    tag: string,
+    action: "boost" | "reset" | "penalize",
+  ) => {
+    setUpdating(true);
+    await fetch("/api/preferences/override", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tag, action }),
+    });
+    setActiveTag(null);
+    setUpdating(false);
+    window.location.reload();
+  };
 
   return (
     <section className="space-y-4">
       <h3 className="text-xl text-primary">I tuoi Gusti</h3>
 
-      {/* Genre sliders */}
       {genre.length > 0 && (
         <DimensionCard title="Genere">
-          <CenteredSliders entries={genre} />
+          <CenteredSliders
+            entries={genre}
+            activeTag={activeTag}
+            updating={updating}
+            onTagClick={setActiveTag}
+            onOverride={handleOverride}
+          />
         </DimensionCard>
       )}
 
-      {/* Vibe sliders */}
       {vibe.length > 0 && (
         <DimensionCard title="Atmosfera">
-          <CenteredSliders entries={vibe} />
+          <CenteredSliders
+            entries={vibe}
+            activeTag={activeTag}
+            updating={updating}
+            onTagClick={setActiveTag}
+            onOverride={handleOverride}
+          />
         </DimensionCard>
       )}
 
-      {/* Energy slider */}
       {Object.keys(energy).length > 0 && (
         <DimensionCard title="Energia">
           <SpectrumSlider
@@ -255,7 +282,6 @@ function TasteProfile({ profile }: { profile: Record<string, number> }) {
         </DimensionCard>
       )}
 
-      {/* Indoor/Outdoor slider */}
       {Object.keys(indoorOutdoor).length > 0 && (
         <DimensionCard title="Location">
           <SpectrumSlider
@@ -266,10 +292,15 @@ function TasteProfile({ profile }: { profile: Record<string, number> }) {
         </DimensionCard>
       )}
 
-      {/* Day moment pills */}
       {Object.keys(dayMoment).length > 0 && (
         <DimensionCard title="Quando">
-          <MomentPills weights={dayMoment} />
+          <MomentPills
+            weights={dayMoment}
+            activeTag={activeTag}
+            updating={updating}
+            onTagClick={setActiveTag}
+            onOverride={handleOverride}
+          />
         </DimensionCard>
       )}
     </section>
@@ -293,26 +324,37 @@ function DimensionCard({
   );
 }
 
-function CenteredSliders({ entries }: { entries: [string, number][] }) {
+function CenteredSliders({
+  entries,
+  activeTag,
+  updating,
+  onTagClick,
+  onOverride,
+}: {
+  entries: [string, number][];
+  activeTag: string | null;
+  updating: boolean;
+  onTagClick: (tag: string | null) => void;
+  onOverride: (tag: string, action: "boost" | "reset" | "penalize") => void;
+}) {
   return (
     <div className="space-y-4">
       {entries.map(([tag, weight]) => {
-        // Normalize weight to -1...+1 range, clamp
         const normalized = Math.max(-1, Math.min(1, weight));
-        // Position: 0% = -1, 50% = 0, 100% = +1
         const position = (normalized + 1) / 2;
 
         return (
           <div key={tag}>
-            <span className="mb-1.5 block text-sm capitalize text-on-surface">
+            <button
+              type="button"
+              onClick={() => onTagClick(activeTag === tag ? null : tag)}
+              className="mb-1.5 block text-sm capitalize text-on-surface"
+            >
               {tag}
-            </span>
+            </button>
             <div className="relative h-5">
-              {/* Track */}
               <div className="absolute top-1/2 h-1.5 w-full -translate-y-1/2 rounded-full bg-surface-container-highest" />
-              {/* Center mark */}
               <div className="absolute top-1/2 left-1/2 h-3 w-px -translate-x-1/2 -translate-y-1/2 bg-outline-variant" />
-              {/* Fill from center */}
               <div
                 className={cn(
                   "absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full",
@@ -327,7 +369,6 @@ function CenteredSliders({ entries }: { entries: [string, number][] }) {
                       }
                 }
               />
-              {/* Thumb */}
               <div
                 className={cn(
                   "absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-sm transition-all",
@@ -338,6 +379,13 @@ function CenteredSliders({ entries }: { entries: [string, number][] }) {
                 style={{ left: `${position * 100}%` }}
               />
             </div>
+            {activeTag === tag && (
+              <OverrideButtons
+                tag={tag}
+                updating={updating}
+                onOverride={onOverride}
+              />
+            )}
           </div>
         );
       })}
@@ -386,39 +434,103 @@ function SpectrumSlider({
   );
 }
 
-function MomentPills({ weights }: { weights: Record<string, number> }) {
+function MomentPills({
+  weights,
+  activeTag,
+  updating,
+  onTagClick,
+  onOverride,
+}: {
+  weights: Record<string, number>;
+  activeTag: string | null;
+  updating: boolean;
+  onTagClick: (tag: string | null) => void;
+  onOverride: (tag: string, action: "boost" | "reset" | "penalize") => void;
+}) {
   const maxW = Math.max(...Object.values(weights).map(Math.abs), 0.1);
   const labels = ["Mattina", "Pome", "Aperitivo", "Sera", "Notte"];
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {DAY_MOMENT.map((key, i) => {
-        const w = weights[key] ?? 0;
-        const intensity = Math.abs(w) / maxW;
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {DAY_MOMENT.map((key, i) => {
+          const w = weights[key] ?? 0;
+          const intensity = Math.abs(w) / maxW;
+          // Scale: 0 intensity → text-xs px-2 py-1, 1 intensity → text-sm px-4 py-2
+          const isActive = w > 0;
+          const isNegative = w < 0;
 
-        return (
-          <span
-            key={key}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
-              w > 0
-                ? "border border-primary text-primary"
-                : w < 0
-                  ? "border border-error/40 text-error/70"
-                  : "border border-outline-variant text-on-surface-variant",
-            )}
-            style={
-              w > 0
-                ? {
-                    backgroundColor: `oklch(0.8 0.13 75 / ${intensity * 0.35 + 0.05})`,
-                  }
-                : undefined
-            }
-          >
-            {labels[i]}
-          </span>
-        );
-      })}
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onTagClick(activeTag === key ? null : key)}
+              className={cn(
+                "rounded-full font-medium transition-all active:scale-95",
+                isActive
+                  ? "bg-primary text-on-primary"
+                  : isNegative
+                    ? "border border-error/40 text-error/70"
+                    : "border border-outline-variant text-on-surface-variant",
+                // Size based on intensity
+                isActive && intensity > 0.6
+                  ? "px-4 py-2 text-sm"
+                  : isActive && intensity > 0.3
+                    ? "px-3 py-1.5 text-xs"
+                    : "px-2.5 py-1 text-xs",
+              )}
+            >
+              {labels[i]}
+            </button>
+          );
+        })}
+      </div>
+      {activeTag && DAY_MOMENT.includes(activeTag) && (
+        <OverrideButtons
+          tag={activeTag}
+          updating={updating}
+          onOverride={onOverride}
+        />
+      )}
+    </div>
+  );
+}
+
+function OverrideButtons({
+  tag,
+  updating,
+  onOverride,
+}: {
+  tag: string;
+  updating: boolean;
+  onOverride: (tag: string, action: "boost" | "reset" | "penalize") => void;
+}) {
+  return (
+    <div className="mt-2 flex gap-2">
+      <button
+        type="button"
+        disabled={updating}
+        onClick={() => onOverride(tag, "boost")}
+        className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs text-primary active:scale-95"
+      >
+        Mi piace
+      </button>
+      <button
+        type="button"
+        disabled={updating}
+        onClick={() => onOverride(tag, "reset")}
+        className="rounded-full border border-outline-variant px-3 py-1 text-xs text-on-surface-variant active:scale-95"
+      >
+        Neutro
+      </button>
+      <button
+        type="button"
+        disabled={updating}
+        onClick={() => onOverride(tag, "penalize")}
+        className="rounded-full border border-error/40 bg-error/10 px-3 py-1 text-xs text-error active:scale-95"
+      >
+        Non mi piace
+      </button>
     </div>
   );
 }
