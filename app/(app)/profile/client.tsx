@@ -1,9 +1,18 @@
 "use client";
 
-import { ArrowRightLeft, Bell, Globe, LogOut, Shield } from "lucide-react";
+import {
+  ArrowRightLeft,
+  Bell,
+  Globe,
+  LogOut,
+  Moon,
+  Shield,
+  Sun,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { usePushSubscription } from "@/hooks/use-push-subscription";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -119,6 +128,7 @@ export function ProfileClient({ profile, userName, userImage }: Props) {
             subscribed={subscribed}
             onToggle={subscribed ? unsubscribe : subscribe}
           />
+          <ThemeToggle />
           <SettingsRow
             icon={Shield}
             label="Privacy & Sicurezza"
@@ -196,6 +206,48 @@ function NotificationToggle({
           )}
         />
       </button>
+    </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const options = ["light", "system", "dark"] as const;
+
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center gap-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-high">
+          <Sun className="h-5 w-5 text-on-surface" />
+        </div>
+        <div>
+          <p className="text-base text-on-surface">Tema</p>
+          <p className="text-[12px] text-on-surface-variant capitalize">
+            {theme === "system"
+              ? "Sistema"
+              : theme === "dark"
+                ? "Scuro"
+                : "Chiaro"}
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-1 rounded-full bg-surface-container-highest p-1">
+        {options.map((opt) => (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => setTheme(opt)}
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+              theme === opt && "bg-primary text-on-primary",
+            )}
+          >
+            {opt === "light" && <Sun className="h-3.5 w-3.5" />}
+            {opt === "system" && <Globe className="h-3.5 w-3.5" />}
+            {opt === "dark" && <Moon className="h-3.5 w-3.5" />}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

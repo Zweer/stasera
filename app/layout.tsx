@@ -1,6 +1,7 @@
 import { SerwistProvider } from "@serwist/turbopack/react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 const inter = Inter({
@@ -50,16 +51,10 @@ export default function RootLayout({
       className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: inline script needed to prevent dark mode flash
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var d=document.documentElement;var m=window.matchMedia('(prefers-color-scheme:dark)');function u(e){d.classList.toggle('dark',e.matches)}u(m);m.addEventListener('change',u)})()`,
-          }}
-        />
-      </head>
       <body className="min-h-full w-full">
-        <SerwistProvider swUrl="/serwist/sw.js">{children}</SerwistProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SerwistProvider swUrl="/serwist/sw.js">{children}</SerwistProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
