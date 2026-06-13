@@ -9,6 +9,7 @@ import { events, recommendations, userPreferences } from "@/db/schema";
 const schema = z.object({
   id: z.string(),
   status: z.enum(["accepted", "rejected"]),
+  reason: z.string().optional(),
 });
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -23,12 +24,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   }
 
-  const { id, status } = parsed.data;
+  const { id, status, reason } = parsed.data;
 
   // Update recommendation status
   await db
     .update(recommendations)
-    .set({ status })
+    .set({ status, feedbackReason: reason ?? null })
     .where(eq(recommendations.id, id));
 
   // Fetch the event to get its tags

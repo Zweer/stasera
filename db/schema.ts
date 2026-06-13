@@ -147,6 +147,7 @@ export const recommendations = pgTable(
     score: real("score").notNull(),
     reason: text("reason"),
     status: text("status").default("pending").notNull(),
+    feedbackReason: text("feedback_reason"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
   (rec) => [

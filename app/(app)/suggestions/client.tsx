@@ -45,7 +45,7 @@ export function SuggestionsClient() {
   }, []);
 
   const handleFeedback = useCallback(
-    async (id: string, status: "accepted" | "rejected") => {
+    async (id: string, status: "accepted" | "rejected", reason?: string) => {
       setRecs((prev) => prev.filter((r) => r.id !== id));
       toast(status === "accepted" ? "Ci vado! 🎉" : "Rimosso dai suggerimenti");
       if (!swipeHintShown) {
@@ -55,10 +55,30 @@ export function SuggestionsClient() {
       await fetch("/api/recommendations/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
+        body: JSON.stringify({ id, status, reason }),
       });
     },
     [swipeHintShown],
+  );
+
+  const [pendingRejectId, setPendingRejectId] = useState<string | null>(null);
+
+  const handleAccept = useCallback(
+    (id: string) => handleFeedback(id, "accepted"),
+    [handleFeedback],
+  );
+
+  const handleRejectStart = useCallback((id: string) => {
+    setPendingRejectId(id);
+  }, []);
+
+  const handleRejectConfirm = useCallback(
+    (reason?: string) => {
+      if (!pendingRejectId) return;
+      handleFeedback(pendingRejectId, "rejected", reason);
+      setPendingRejectId(null);
+    },
+    [pendingRejectId, handleFeedback],
   );
 
   const dismissTip = useCallback(() => {
@@ -119,11 +139,19 @@ export function SuggestionsClient() {
             key={rec.id}
             rec={rec}
             showHint={!swipeHintShown}
-            onAccept={() => handleFeedback(rec.id, "accepted")}
-            onReject={() => handleFeedback(rec.id, "rejected")}
+            onAccept={() => handleAccept(rec.id)}
+            onReject={() => handleRejectStart(rec.id)}
           />
         ))}
       </div>
+
+      {/* Reject reason sheet */}
+      {pendingRejectId && (
+        <RejectReasonSheet
+          onSelect={handleRejectConfirm}
+          onSkip={() => handleRejectConfirm()}
+        />
+      )}
     </div>
   );
 }
@@ -287,6 +315,57 @@ function SwipeableCard({
             </p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+const REJECT_REASONS = [
+  "Non mi interessa il genere",
+  "Troppo lontano",
+  "Ho già piani",
+  "Non mi piace il locale",
+  "Prezzo troppo alto",
+] as const;
+
+function RejectReasonSheet({
+  onSelect,
+  onSkip,
+}: {
+  onSelect: (reason: string) => void;
+  onSkip: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center">
+      <button
+        type="button"
+        className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+        onClick={onSkip}
+        aria-label="Chiudi"
+      />
+      <div className="relative w-full max-w-lg rounded-t-2xl border border-outline-variant bg-surface-container p-5 pb-8 animate-in slide-in-from-bottom">
+        <p className="mb-4 text-center text-sm font-medium text-on-surface">
+          Perché non ti interessa?
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {REJECT_REASONS.map((reason) => (
+            <button
+              key={reason}
+              type="button"
+              onClick={() => onSelect(reason)}
+              className="rounded-full border border-outline-variant px-4 py-2 text-sm text-on-surface-variant transition-colors hover:border-primary hover:text-primary active:scale-95"
+            >
+              {reason}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onSkip}
+          className="mt-4 w-full text-center text-sm text-on-surface-variant/60 hover:text-on-surface-variant"
+        >
+          Salta
+        </button>
       </div>
     </div>
   );

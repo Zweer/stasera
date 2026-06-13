@@ -124,8 +124,8 @@ export function ExploreClient() {
 
 function EventCard({ event, priority }: { event: Event; priority?: boolean }) {
   return (
-    <article className="group flex h-36 cursor-pointer overflow-hidden rounded-xl border border-outline-variant bg-surface-container transition-transform active:scale-[0.98]">
-      <div className="relative h-full w-1/3 overflow-hidden bg-surface-container-high">
+    <article className="group flex min-h-36 cursor-pointer overflow-hidden rounded-xl border border-outline-variant bg-surface-container transition-transform active:scale-[0.98]">
+      <div className="relative w-1/3 min-h-36 overflow-hidden bg-surface-container-high">
         {event.imageUrl ? (
           <Image
             src={event.imageUrl}
