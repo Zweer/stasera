@@ -1,9 +1,12 @@
 "use client";
 
-import { Check, MapPin, Sparkles, X } from "lucide-react";
+import { ArrowRightLeft, Calendar, MapPin, Sparkles, X } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { formatEventDate } from "@/lib/format-event-date";
+import { cn } from "@/lib/utils";
 
 interface Recommendation {
   id: string;
@@ -26,6 +29,13 @@ interface Recommendation {
 export function SuggestionsClient() {
   const [recs, setRecs] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tipDismissed, setTipDismissed] = useState(false);
+  const [swipeHintShown, setSwipeHintShown] = useState(false);
+
+  useEffect(() => {
+    setTipDismissed(localStorage.getItem("ingiro:tip-dismissed") === "1");
+    setSwipeHintShown(localStorage.getItem("ingiro:swipe-hinted") === "1");
+  }, []);
 
   useEffect(() => {
     fetch("/api/recommendations")
@@ -38,14 +48,23 @@ export function SuggestionsClient() {
     async (id: string, status: "accepted" | "rejected") => {
       setRecs((prev) => prev.filter((r) => r.id !== id));
       toast(status === "accepted" ? "Ci vado! 🎉" : "Rimosso dai suggerimenti");
+      if (!swipeHintShown) {
+        setSwipeHintShown(true);
+        localStorage.setItem("ingiro:swipe-hinted", "1");
+      }
       await fetch("/api/recommendations/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
       });
     },
-    [],
+    [swipeHintShown],
   );
+
+  const dismissTip = useCallback(() => {
+    setTipDismissed(true);
+    localStorage.setItem("ingiro:tip-dismissed", "1");
+  }, []);
 
   if (loading) {
     return (
@@ -62,21 +81,44 @@ export function SuggestionsClient() {
   }
 
   return (
-    <div className="px-5 pt-6">
-      <header className="mb-6">
+    <div className="px-5 pt-6 pb-32">
+      <header className="mb-4">
         <h2 className="text-2xl text-on-surface md:text-3xl">
           Suggerimenti per te
         </h2>
-        <p className="text-base mt-1 text-on-surface-variant">
+        <p className="text-sm mt-1 text-on-surface-variant">
           Creati su misura per il tuo weekend a Genova.
         </p>
       </header>
 
-      <div className="mx-auto flex max-w-lg flex-col gap-6">
+      {/* Educational tip */}
+      {!tipDismissed && (
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
+          <ArrowRightLeft className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="flex-1 text-sm text-on-surface-variant">
+            I suggerimenti migliorano col tempo. Rifiuta quelli che non ti
+            piacciono e{" "}
+            <Link href="/onboarding" className="text-primary underline">
+              fai altri confronti
+            </Link>{" "}
+            per affinare i tuoi gusti!
+          </p>
+          <button
+            type="button"
+            onClick={dismissTip}
+            className="shrink-0 text-on-surface-variant hover:text-on-surface"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      <div className="mx-auto flex max-w-lg flex-col gap-4">
         {recs.map((rec) => (
-          <SuggestionCard
+          <SwipeableCard
             key={rec.id}
             rec={rec}
+            showHint={!swipeHintShown}
             onAccept={() => handleFeedback(rec.id, "accepted")}
             onReject={() => handleFeedback(rec.id, "rejected")}
           />
@@ -86,100 +128,167 @@ export function SuggestionsClient() {
   );
 }
 
-function SuggestionCard({
+function SwipeableCard({
   rec,
+  showHint,
   onAccept,
   onReject,
 }: {
   rec: Recommendation;
+  showHint: boolean;
   onAccept: () => void;
   onReject: () => void;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const startX = useRef(0);
+  const currentX = useRef(0);
+  const isDragging = useRef(false);
+  const [offset, setOffset] = useState(0);
+  const [swiping, setSwiping] = useState<"left" | "right" | null>(null);
+  const [exiting, setExiting] = useState<"left" | "right" | null>(null);
+
+  const threshold = 100;
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    isDragging.current = true;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    currentX.current = e.touches[0].clientX - startX.current;
+    setOffset(currentX.current);
+    setSwiping(
+      currentX.current > 40 ? "right" : currentX.current < -40 ? "left" : null,
+    );
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    isDragging.current = false;
+    if (currentX.current > threshold) {
+      setExiting("right");
+      setTimeout(onAccept, 300);
+    } else if (currentX.current < -threshold) {
+      setExiting("left");
+      setTimeout(onReject, 300);
+    } else {
+      setOffset(0);
+      setSwiping(null);
+    }
+    currentX.current = 0;
+  }, [onAccept, onReject]);
+
   const { event, reason } = rec;
 
   return (
-    <article className="group overflow-hidden rounded-xl border border-outline-variant bg-surface-container transition-transform active:scale-[0.98]">
+    <div
+      ref={cardRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className={cn(
+        "relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container transition-transform",
+        exiting === "left" &&
+          "translate-x-[-120%] opacity-0 transition-all duration-300",
+        exiting === "right" &&
+          "translate-x-[120%] opacity-0 transition-all duration-300",
+        !exiting && "transition-none",
+      )}
+      style={!exiting ? { transform: `translateX(${offset}px)` } : undefined}
+    >
+      {/* Swipe indicator overlays */}
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 transition-opacity",
+          swiping === "right"
+            ? "border-green-500 bg-green-500/10 opacity-100"
+            : "opacity-0",
+        )}
+      >
+        <span className="text-lg font-bold text-green-500">ACCETTA ✓</span>
+      </div>
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 transition-opacity",
+          swiping === "left"
+            ? "border-red-400 bg-red-400/10 opacity-100"
+            : "opacity-0",
+        )}
+      >
+        <span className="text-lg font-bold text-red-400">RIFIUTA ✗</span>
+      </div>
+
+      {/* Swipe hint animation */}
+      {showHint && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center">
+          <span className="animate-pulse rounded-full bg-surface-container-highest/90 px-3 py-1 text-xs text-on-surface-variant">
+            ← Rifiuta · Accetta →
+          </span>
+        </div>
+      )}
+
       {/* Image */}
-      <div className="relative h-[320px] w-full overflow-hidden sm:h-[400px]">
+      <div className="relative h-48 w-full overflow-hidden">
         {event.imageUrl ? (
           <Image
             src={event.imageUrl}
             alt={event.name}
             fill
             unoptimized
-            className="h-full w-full object-cover"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-surface-container-high">
-            <Sparkles className="h-12 w-12 text-outline" />
+            <Sparkles className="h-10 w-10 text-outline" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
 
-        {/* Tags + title overlay */}
-        <div className="absolute inset-x-0 bottom-0 px-4 pb-6">
-          <div className="mb-2 flex gap-2">
+        {/* Tags overlay */}
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-3">
+          <div className="flex gap-1.5">
             {event.genre && (
-              <span className="text-xs rounded-full border border-primary bg-primary/20 px-3 py-1 uppercase tracking-wider text-primary">
+              <span className="rounded-full border border-primary bg-primary/20 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary">
                 {event.genre}
               </span>
             )}
             {event.vibe && (
-              <span className="text-xs rounded-full border border-outline-variant bg-surface-container-high/80 px-3 py-1 text-on-surface-variant">
+              <span className="rounded-full border border-outline-variant bg-surface-container-high/80 px-2 py-0.5 text-[10px] text-on-surface-variant">
                 {event.vibe}
               </span>
             )}
           </div>
-          <h3 className="text-xl text-on-surface">{event.name}</h3>
-          {(event.locationName || event.time) && (
-            <div className="mt-1 flex items-center gap-1 text-on-surface-variant">
-              <MapPin className="h-4 w-4" />
-              <span className="text-sm">
-                {[event.locationName, event.time].filter(Boolean).join(" · ")}
-              </span>
-            </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-on-surface">{event.name}</h3>
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-on-surface-variant">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3.5 w-3.5" />
+            {formatEventDate(event.date)}
+            {event.time && ` · ${event.time}`}
+          </span>
+          {event.locationName && (
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5" />
+              {event.locationName}
+            </span>
           )}
         </div>
-      </div>
 
-      {/* Reason + actions */}
-      <div className="border-t border-outline-variant p-6">
+        {/* Reason */}
         {reason && (
-          <div className="mb-6 flex items-start gap-4">
-            <div className="rounded-lg bg-primary-container/20 p-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm mb-1 uppercase text-primary">
-                InGiro's Reason
-              </p>
-              <p className="text-base italic leading-relaxed text-on-surface">
-                "{reason}"
-              </p>
-            </div>
+          <div className="mt-3 flex items-start gap-2 rounded-lg bg-primary/5 p-2.5">
+            <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            <p className="text-sm italic leading-snug text-on-surface-variant">
+              {reason}
+            </p>
           </div>
         )}
-
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            type="button"
-            onClick={onReject}
-            className="text-sm flex items-center justify-center gap-2 rounded-xl border border-outline-variant px-6 py-4 text-on-surface-variant transition-all hover:bg-surface-container-high active:scale-95"
-          >
-            <X className="h-4 w-4" />
-            RIFIUTA
-          </button>
-          <button
-            type="button"
-            onClick={onAccept}
-            className="text-sm flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 font-bold text-on-primary shadow-lg shadow-primary/10 transition-all hover:brightness-110 active:scale-95"
-          >
-            <Check className="h-4 w-4" />
-            ACCETTA
-          </button>
-        </div>
       </div>
-    </article>
+    </div>
   );
 }
 

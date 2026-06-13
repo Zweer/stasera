@@ -1,9 +1,10 @@
 "use client";
 
-import { Camera, MapPin, Search } from "lucide-react";
+import { Calendar, Camera, MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { formatEventDate } from "@/lib/format-event-date";
 import { cn } from "@/lib/utils";
 
 const FILTERS = [
@@ -146,11 +147,18 @@ function EventCard({ event, priority }: { event: Event; priority?: boolean }) {
             {event.name}
           </h3>
           <div className="mt-1 flex items-center gap-1 text-on-surface-variant">
-            <MapPin className="h-3.5 w-3.5" />
+            <Calendar className="h-3.5 w-3.5" />
             <p className="text-sm">
-              {[event.locationName, event.time].filter(Boolean).join(" · ")}
+              {formatEventDate(event.date)}
+              {event.time && ` · ${event.time}`}
             </p>
           </div>
+          {event.locationName && (
+            <div className="mt-0.5 flex items-center gap-1 text-on-surface-variant">
+              <MapPin className="h-3.5 w-3.5" />
+              <p className="text-sm">{event.locationName}</p>
+            </div>
+          )}
         </div>
         <div className="flex flex-wrap gap-1">
           {event.genre && (
