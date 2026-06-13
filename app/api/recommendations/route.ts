@@ -26,6 +26,8 @@ export async function GET(): Promise<NextResponse> {
         locationName: events.locationName,
         genre: events.genre,
         vibe: events.vibe,
+        energyLevel: events.energyLevel,
+        indoorOutdoor: events.indoorOutdoor,
         imageUrl: events.imageUrl,
       },
     })

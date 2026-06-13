@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useState } from "react";
 import { usePushSubscription } from "@/hooks/use-push-subscription";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -68,35 +69,7 @@ export function ProfileClient({ profile, userName, userImage }: Props) {
 
       {/* Taste profile */}
       {sorted.length > 0 && (
-        <section className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-xl text-primary">Taste Profile</h3>
-          </div>
-          <div className="space-y-4">
-            {sorted.map(([tag, weight]) => {
-              const pct = Math.round((Math.abs(weight) / maxWeight) * 100);
-              return (
-                <div key={tag}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-base capitalize text-on-surface">
-                      {tag}
-                    </span>
-                    <span className="text-sm text-primary">{pct}%</span>
-                  </div>
-                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-surface-container-highest">
-                    <div
-                      className={cn(
-                        "h-full rounded-full transition-all",
-                        weight > 0 ? "bg-primary" : "bg-error",
-                      )}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <TasteProfile entries={sorted} maxWeight={maxWeight} />
       )}
 
       {/* Refine CTA */}
@@ -207,6 +180,96 @@ function NotificationToggle({
         />
       </button>
     </div>
+  );
+}
+
+function TasteProfile({
+  entries,
+  maxWeight,
+}: {
+  entries: [string, number][];
+  maxWeight: number;
+}) {
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
+
+  const handleOverride = async (
+    tag: string,
+    value: "boost" | "reset" | "penalize",
+  ) => {
+    setUpdating(true);
+    await fetch("/api/preferences/override", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tag, action: value }),
+    });
+    setActiveTag(null);
+    setUpdating(false);
+    window.location.reload();
+  };
+
+  return (
+    <section className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-xl text-primary">I tuoi Gusti</h3>
+      </div>
+      <div className="space-y-4">
+        {entries.map(([tag, weight]) => {
+          const pct = Math.round((Math.abs(weight) / maxWeight) * 100);
+          return (
+            <div key={tag}>
+              <button
+                type="button"
+                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                className="flex w-full items-center justify-between"
+              >
+                <span className="text-base capitalize text-on-surface">
+                  {tag}
+                </span>
+                <span className="text-sm text-primary">{pct}%</span>
+              </button>
+              <div className="mt-1 h-1 overflow-hidden rounded-full bg-surface-container-highest">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    weight > 0 ? "bg-primary" : "bg-error",
+                  )}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              {activeTag === tag && (
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    disabled={updating}
+                    onClick={() => handleOverride(tag, "boost")}
+                    className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs text-primary active:scale-95"
+                  >
+                    Mi piace
+                  </button>
+                  <button
+                    type="button"
+                    disabled={updating}
+                    onClick={() => handleOverride(tag, "reset")}
+                    className="rounded-full border border-outline-variant px-3 py-1 text-xs text-on-surface-variant active:scale-95"
+                  >
+                    Neutro
+                  </button>
+                  <button
+                    type="button"
+                    disabled={updating}
+                    onClick={() => handleOverride(tag, "penalize")}
+                    className="rounded-full border border-error/40 bg-error/10 px-3 py-1 text-xs text-error active:scale-95"
+                  >
+                    Non mi piace
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

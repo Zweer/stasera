@@ -22,6 +22,8 @@ interface Recommendation {
     locationName: string | null;
     genre: string | null;
     vibe: string | null;
+    energyLevel: string | null;
+    indoorOutdoor: string | null;
     imageUrl: string | null;
   };
 }
@@ -148,6 +150,7 @@ export function SuggestionsClient() {
       {/* Reject reason sheet */}
       {pendingRejectId && (
         <RejectReasonSheet
+          event={recs.find((r) => r.id === pendingRejectId)?.event ?? null}
           onSelect={handleRejectConfirm}
           onSkip={() => handleRejectConfirm()}
         />
@@ -320,21 +323,32 @@ function SwipeableCard({
   );
 }
 
-const REJECT_REASONS = [
-  "Non mi interessa il genere",
-  "Troppo lontano",
-  "Ho già piani",
-  "Non mi piace il locale",
-  "Prezzo troppo alto",
-] as const;
+function buildRejectReasons(event: Recommendation["event"] | null): string[] {
+  const reasons: string[] = [];
+  if (event?.genre) reasons.push(`Non mi interessa: ${event.genre}`);
+  if (event?.vibe) reasons.push(`Non cerco qualcosa di ${event.vibe}`);
+  if (event?.indoorOutdoor)
+    reasons.push(
+      event.indoorOutdoor === "indoor"
+        ? "Preferisco stare all'aperto"
+        : "Preferisco stare al chiuso",
+    );
+  if (event?.locationName) reasons.push("Troppo lontano");
+  reasons.push("Ho già piani");
+  return reasons;
+}
 
 function RejectReasonSheet({
+  event,
   onSelect,
   onSkip,
 }: {
+  event: Recommendation["event"] | null;
   onSelect: (reason: string) => void;
   onSkip: () => void;
 }) {
+  const reasons = buildRejectReasons(event);
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <button
@@ -348,7 +362,7 @@ function RejectReasonSheet({
           Perché non ti interessa?
         </p>
         <div className="flex flex-wrap justify-center gap-2">
-          {REJECT_REASONS.map((reason) => (
+          {reasons.map((reason) => (
             <button
               key={reason}
               type="button"
