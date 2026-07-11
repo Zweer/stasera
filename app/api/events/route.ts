@@ -1,15 +1,21 @@
-import { and, desc, eq, gte } from "drizzle-orm";
+import { and, asc, eq, gte } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { events } from "@/db/schema";
 
 export async function GET(): Promise<NextResponse> {
   const now = new Date();
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+
   const rows = await db
     .select()
     .from(events)
-    .where(and(gte(events.date, now), eq(events.status, "active")))
-    .orderBy(desc(events.date))
+    .where(and(gte(events.date, startOfToday), eq(events.status, "active")))
+    .orderBy(asc(events.date))
     .limit(50);
 
   return NextResponse.json(

@@ -73,7 +73,7 @@ async function getWeekendEvents() {
 
 const reasonCache = new Map<string, string>();
 
-async function generateReason(
+export async function generateReason(
   eventId: string,
   name: string,
   genre: string | null,

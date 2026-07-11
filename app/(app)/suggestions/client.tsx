@@ -325,6 +325,17 @@ function SwipeableCard({
 
 function buildRejectReasons(event: Recommendation["event"] | null): string[] {
   const reasons: string[] = [];
+
+  // Check if event is in the past
+  if (event?.date) {
+    const eventDate = new Date(event.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (eventDate < today) {
+      reasons.push("Evento già passato");
+    }
+  }
+
   if (event?.genre) reasons.push(`Non mi interessa: ${event.genre}`);
   if (event?.vibe) reasons.push(`Non cerco qualcosa di ${event.vibe}`);
   if (event?.indoorOutdoor)

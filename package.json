@@ -73,5 +73,11 @@
     "tailwindcss": "^4",
     "typescript": "^6",
     "vitest": "^4.1.8"
+  },
+  "allowScripts": {
+    "@swc/core@1.15.32": true,
+    "esbuild@0.28.1": true,
+    "lefthook@2.1.9": true,
+    "sharp@0.34.5": true
   }
 }
