@@ -137,10 +137,11 @@ export function SuggestionsClient() {
       )}
 
       <div className="mx-auto flex max-w-lg flex-col gap-4">
-        {recs.map((rec) => (
+        {recs.map((rec, i) => (
           <SwipeableCard
             key={rec.id}
             rec={rec}
+            priority={i === 0}
             showHint={!swipeHintShown}
             onAccept={() => handleAccept(rec.id)}
             onReject={() => handleRejectStart(rec.id)}
@@ -162,11 +163,13 @@ export function SuggestionsClient() {
 
 function SwipeableCard({
   rec,
+  priority,
   showHint,
   onAccept,
   onReject,
 }: {
   rec: Recommendation;
+  priority?: boolean;
   showHint: boolean;
   onAccept: () => void;
   onReject: () => void;
@@ -267,6 +270,7 @@ function SwipeableCard({
             alt={event.name}
             fill
             unoptimized
+            priority={priority}
             className="object-cover"
           />
         ) : (
