@@ -128,6 +128,7 @@ export function SuggestionsClient() {
           <button
             type="button"
             onClick={dismissTip}
+            aria-label="Chiudi"
             className="shrink-0 text-on-surface-variant hover:text-on-surface"
           >
             <X className="h-4 w-4" />
