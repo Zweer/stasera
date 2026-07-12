@@ -20,7 +20,7 @@ export const auth = betterAuth({
   },
   plugins: [
     anonymous({
-      emailDomainName: "guest.stasera.app",
+      emailDomainName: "guest.ingiro.app",
       async onLinkAccount({ anonymousUser, newUser }) {
         // Transfer guest-uploaded events to the new user
         const guestId = anonymousUser.user.id;
